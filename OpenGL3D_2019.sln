@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGL3D_2019", "OpenGL3D_2019.vcxproj", "{B090862E-B833-4ACB-A033-001DB53BA943}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Debug|x64.ActiveCfg = Debug|x64
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Debug|x64.Build.0 = Debug|x64
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Debug|x86.ActiveCfg = Debug|Win32
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Debug|x86.Build.0 = Debug|Win32
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Release|x64.ActiveCfg = Release|x64
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Release|x64.Build.0 = Release|x64
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Release|x86.ActiveCfg = Release|Win32
+		{B090862E-B833-4ACB-A033-001DB53BA943}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DD09243-9CE8-4642-80D7-2AC97738C6B6}
+	EndGlobalSection
+EndGlobal
