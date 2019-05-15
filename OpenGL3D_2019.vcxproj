@@ -115,11 +115,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\GameOverScene.cpp" />
     <ClCompile Include="Src\Main.cpp" />
+    <ClCompile Include="Src\MainGameScene.cpp" />
     <ClCompile Include="Src\Scene.cpp" />
+    <ClCompile Include="Src\StatusScene.cpp" />
+    <ClCompile Include="Src\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\GameOverScene.h" />
+    <ClInclude Include="Src\MainGameScene.h" />
     <ClInclude Include="Src\Scene.h" />
+    <ClInclude Include="Src\StatusScene.h" />
+    <ClInclude Include="Src\TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
