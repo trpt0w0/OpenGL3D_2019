@@ -29,6 +29,12 @@
     <ClCompile Include="Src\GameOverScene.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\GLFWEW.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BufferObject.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
@@ -46,5 +52,17 @@
     <ClInclude Include="Src\GameOverScene.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\GamePad.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GLFWEW.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BufferObject.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

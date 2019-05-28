@@ -217,12 +217,16 @@ bool SceneStack::Empty() const {
 *	@param deltaTime 前回の更新からの経過時間(秒)
 */
 void SceneStack::Update(float deltaTime) {
-	for (ScenePtr& e : stack) {
-		e->ProcessInput();
+
+	if (!Empty()) {
+		Current().ProcessInput();
 	}
 
 	for (ScenePtr& e : stack) {
-		e->Update(deltaTime);
+		if (e->IsActive()) {
+			e->Update(deltaTime);
+		}
+
 	}
 
 }
