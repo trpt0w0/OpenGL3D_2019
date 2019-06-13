@@ -89,6 +89,9 @@ if (glewInit() != GLEW_OK) {
 	return false;
 }
 
+	width = w;
+	height = h;
+
 glDebugMessageCallback(OutputGLDebugMessage, nullptr);
 
 const GLubyte* renderer = glGetString(GL_RENDERER);

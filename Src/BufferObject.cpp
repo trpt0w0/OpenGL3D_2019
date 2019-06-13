@@ -20,6 +20,7 @@ bool BufferObject::Create(
 	GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) {
 	
 	Destroy();
+	// ここで例外スロー
 	glGenBuffers(1, &id);
 	glBindBuffer(target, id);
 	glBufferData(target, size, data, usage);
@@ -99,6 +100,7 @@ bool VertexArrayObject::Create(GLuint vbo, GLuint ibo) {
 		std::cerr << "[エラー]" << __func__ << ":VAOの作成に失敗.\n";
 		return error == GL_NO_ERROR;
 	}
+
 }
 
 /**
