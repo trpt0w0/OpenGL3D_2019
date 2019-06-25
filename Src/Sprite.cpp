@@ -47,13 +47,15 @@ bool SpriteRenderer::Init(size_t maxSpriteCount, const char* vsPath, const char*
 	
 	// lŠpŒ`‚ğmaxSpriteCountŒÂì‚é
 	std::vector<GLushort> indices;
-	for (GLushort i = 0; i < maxSpriteCount; ++i) {
+	indices.resize(maxSpriteCount * 6);
+
+		for (GLushort i = 0; i < maxSpriteCount; ++i) {
 		indices[i * 6 + 0] = (i * 4) + 0;
 		indices[i * 6 + 1] = (i * 4) + 1;
 		indices[i * 6 + 2] = (i * 4) + 2;
 		indices[i * 6 + 3] = (i * 4) + 2;
 		indices[i * 6 + 4] = (i * 4) + 3;
-		indices[i * 6 + 5] = (i * 4) + 6;
+		indices[i * 6 + 5] = (i * 4) + 0;
 	}
 
 	ibo.Create(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(), GL_STATIC_DRAW);
@@ -175,8 +177,10 @@ void SpriteRenderer::EndUpdate() {
 */
 void SpriteRenderer::Draw(const glm::vec2&screenSize) const {
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 	vao.Bind();
 	program->Use();

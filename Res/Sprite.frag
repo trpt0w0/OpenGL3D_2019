@@ -16,6 +16,8 @@ uniform sampler2D texColor;
 *	スプライト用フラグメントシェーダー
 */
 void main(){
-	flagColor = inColor * texture(texColor, inTexCoord);
+	
+	fragColor = inColor * texture(texColor, inTexCoord);
+
 
 }

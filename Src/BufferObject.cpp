@@ -20,6 +20,7 @@ bool BufferObject::Create(
 	GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage) {
 	
 	Destroy();
+
 	// Ç±Ç±Ç≈ó·äOÉXÉçÅ[
 	glGenBuffers(1, &id);
 	glBindBuffer(target, id);
@@ -88,8 +89,8 @@ bool VertexArrayObject::Create(GLuint vbo, GLuint ibo) {
 	Destroy();
 	glGenVertexArrays(1, &id);
 	glBindVertexArray(id);
-	glBindBuffer(GL_ARRAY_BUFFER, ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
