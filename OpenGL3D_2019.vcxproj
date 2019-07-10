@@ -129,6 +129,7 @@
     <ClCompile Include="Src\GLFWEW.cpp" />
     <ClCompile Include="Src\Main.cpp" />
     <ClCompile Include="Src\MainGameScene.cpp" />
+    <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\Scene.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Sprite.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Src\Geometry.h" />
     <ClInclude Include="Src\GLFWEW.h" />
     <ClInclude Include="Src\MainGameScene.h" />
+    <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\Scene.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Sprite.h" />
@@ -155,6 +157,8 @@
     <None Include="packages.config" />
     <None Include="Res\Sprite.frag" />
     <None Include="Res\Sprite.vert" />
+    <None Include="Res\StaticMesh.frag" />
+    <None Include="Res\StaticMesh.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

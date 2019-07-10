@@ -4,6 +4,9 @@
 */
 #include "TitleScene.h"
 #include "GLFWEW.h"
+#include <Windows.h>
+#include <iostream>
+
 
 int main() 
 {
@@ -13,18 +16,32 @@ int main()
 
 	SceneStack& sceneStack = SceneStack::Instance();
 	sceneStack.Push(std::make_shared<TitleScene>());
-
+	
 
 	for (;!window.ShouldClose();) {
-		
-		const float deltaTime = 1.0f / 60.0f;
-
+	
 		window.UpdateGamePad();
+
+		const float deltaTime = window.DeltaTime();
 
 		sceneStack.Update(deltaTime);
 
-		glClearColor(0.1f, 0.2f, 0.3f, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// ESCキーが押されたら終了ウィンドウを表示
+		if (window.IsKeyPressed(GLFW_KEY_ESCAPE)) {
+			if (MessageBox(nullptr, "ゲーム終了しますか？", "終了", MB_OKCANCEL) == IDOK) {
+				break;
+			}
+		}
+		
+
+		// バックバッファを削除する
+		glClearColor(0.8f, 0.2f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// GLコンテクストのパラメータを設定
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+
 
 		sceneStack.Render();
 

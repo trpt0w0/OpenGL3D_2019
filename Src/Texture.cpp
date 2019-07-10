@@ -1,14 +1,51 @@
 /**
 * @file Texture.cpp
 */
+
+#define NOMIMAX
 #include "Texture.h"
 #include <cstdint>
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 /// テクスチャ関連の関数やクラスを格納する名前空間.
 namespace Texture {
+
+/*
+*	色データを取得する
+*
+*	@param x	X座標
+*	@param y	Y座標
+*
+*	@return 座標(x,y)の色を0.0～1.0で表した値
+*			色要素がデータに存在しない場合、RGBは0.0 Aは1.0になる
+*/
+	glm::vec4 ImageData::GetColor(int x, int y) const {
+	
+		// 座標を画像の範囲に制限
+		x = std::max(0, std::min(x, width - 1));
+		y = std::max(0, std::min(y, height - 1));
+
+		if (type == GL_UNSIGNED_BYTE) {
+			// 各色１バイトのデータ
+			glm::vec4 color(0, 0, 0, 255);
+			return color / 255.0f;
+		} else if(type == GL_UNSIGNED_SHORT_1_5_5_5_REV) {
+			// 色が2バイトに詰め込んだデータ
+			glm::vec4 color(0, 0, 0, 1);
+			return color / glm::vec4(31.0f, 31.0f, 31.0f, 1.0f);
+		}
+		
+		return glm::vec4(0, 0, 0, 1);
+	}
+
+
+
+
+
+
 
 /**
 * 2Dテクスチャを作成する.
