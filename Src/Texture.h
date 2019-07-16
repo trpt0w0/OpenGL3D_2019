@@ -30,6 +30,7 @@ namespace Texture {
 
 GLuint CreateImage2D(GLsizei width, GLsizei height, const GLvoid* data, GLenum format, GLenum type);
 GLuint LoadImage2D(const char* path);
+bool LoadImage2D(const char* path, ImageData* imageData);
 
 /**
 * テクスチャ・イメージ.

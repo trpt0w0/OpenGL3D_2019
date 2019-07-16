@@ -31,20 +31,42 @@ namespace Texture {
 		if (type == GL_UNSIGNED_BYTE) {
 			// 各色１バイトのデータ
 			glm::vec4 color(0, 0, 0, 255);
+			if (format == GL_BGRA) {
+				// BGRAの順番で1バイトずつ、合計4バイト格納されている
+				const uint8_t* p = &data[x * 3 + y * (width * 4)];
+				color.b = p[0];
+				color.g = p[1];
+				color.r = p[2];
+				color.a = p[3];
+			} else if (format == GL_BGR) {
+				// BGRの番号で1バイトずつ、合計で３バイト格納されている
+				const uint8_t* p = &data[x * 3 + y * (width * 3)];
+				color.b = p[0];
+				color.g = p[1];
+				color.r = p[2];
+			} else if (format == GL_RED) {
+				// 赤色だけ、合計1バイト格納されている
+				color.r = data[x + y * width];
+			}
 			return color / 255.0f;
 		} else if(type == GL_UNSIGNED_SHORT_1_5_5_5_REV) {
 			// 色が2バイトに詰め込んだデータ
 			glm::vec4 color(0, 0, 0, 1);
+			const uint8_t* p = &data[x * 2 + y * (width * 2)];
+			const uint16_t c = p[0] + p[1] * 0x100;		// 2つのバイトを結合
+			if (format == GL_BGRA) {
+				// 16ビットのデータから各色を取り出す
+				color.b = static_cast<float>((c & 0b0000'0000'0001'1111));
+				color.g = static_cast<float>((c & 0b0000'0011'1110'0000) >> 5);
+				color.r = static_cast<float>((c & 0b0111'1100'0000'0000) >> 10);
+				color.a = static_cast<float>((c & 0b1000'0000'0000'0000) >> 15);
+			}
+
 			return color / glm::vec4(31.0f, 31.0f, 31.0f, 1.0f);
 		}
 		
 		return glm::vec4(0, 0, 0, 1);
 	}
-
-
-
-
-
 
 
 /**
@@ -101,69 +123,98 @@ GLuint CreateImage2D(GLsizei width, GLsizei height, const GLvoid* data, GLenum f
 */
 GLuint LoadImage2D(const char* path)
 {
-  // TGAヘッダを読み込む.
-  std::basic_ifstream<uint8_t> ifs;
+	ImageData imageData;
+	if (!LoadImage2D(path, &imageData)) {
+		return 0;
+	}
+	return CreateImage2D(imageData.width, imageData.height, imageData.data.data(),
+		imageData.format, imageData.type);
 
-  ifs.open(path, std::ios_base::binary);
-  if (!ifs) {
-    std::cerr << "WARNING: " << path << "を開けません.\n";
-    return 0;
-  }
-  std::vector<uint8_t> tmp(1024 * 1024);
-  ifs.rdbuf()->pubsetbuf(tmp.data(), tmp.size());
+}
 
-  std::cout << "INFO: " << path << "を読み込み中…";
-  uint8_t tgaHeader[18];
-  ifs.read(tgaHeader, 18);
+/**
+*	ファイルから画像データを読み込む
+*
+*	@param path			画像として読み込むファイルパス
+*	@param imageData	画像データを格納する構造体
+*	
+*	@retval true	読み込み成功
+*	@retval false	読み込む失敗
+*
+*/
 
-  // イメージIDを飛ばす.
-  ifs.ignore(tgaHeader[0]);
+bool LoadImage2D(const char* path, ImageData* imageData){
 
-  // カラーマップを飛ばす.
-  if (tgaHeader[1]) {
-    const int colorMapLength = tgaHeader[5] | (tgaHeader[6] << 8);
-    const int colorMapEntrySize = tgaHeader[7];
-    const int colorMapSize = colorMapLength * colorMapEntrySize / 8;
-    ifs.ignore(colorMapSize);
-  }
+	// TGAヘッダを読み込む.
+	std::basic_ifstream<uint8_t> ifs;
 
-  // 画像データを読み込む.
-  const int width = tgaHeader[12] | (tgaHeader[13] << 8);
-  const int height = tgaHeader[14] | (tgaHeader[15] << 8);
-  const int pixelDepth = tgaHeader[16];
-  const int imageSize = width * height * pixelDepth / 8;
-  std::vector<uint8_t> buf(imageSize);
-  ifs.read(buf.data(), imageSize);
+	ifs.open(path, std::ios_base::binary);
+	if (!ifs) {
+		std::cerr << "WARNING: " << path << "を開けません.\n";
+		return 0;
+	}
+	std::vector<uint8_t> tmp(1024 * 1024);
+	ifs.rdbuf()->pubsetbuf(tmp.data(), tmp.size());
 
-  // 画像データが「上から下」で格納されている場合、上下を入れ替える.
-  if (tgaHeader[17] & 0x20) {
-    std::cout << "反転中…";
-    const int lineSize = width * pixelDepth / 8;
-    std::vector<uint8_t> tmp(imageSize);
-    std::vector<uint8_t>::iterator source = buf.begin();
-    std::vector<uint8_t>::iterator destination = tmp.end();
-    for (int i = 0; i < height; ++i) {
-      destination -= lineSize;
-      std::copy(source, source + lineSize, destination);
-      source += lineSize;
-    }
-    buf.swap(tmp);
-  }
-  std::cout << "完了\n";
+	std::cout << "INFO: " << path << "を読み込み中…";
+	uint8_t tgaHeader[18];
+	ifs.read(tgaHeader, 18);
 
-  GLenum type = GL_UNSIGNED_BYTE;
-  GLenum format = GL_BGRA;
-  if (tgaHeader[2] == 3) {
-    format = GL_RED;
-  }
-  if (tgaHeader[16] == 24) {
-    format = GL_BGR;
-  } else if (tgaHeader[16] == 16) {
-    type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
-  }
+	// イメージIDを飛ばす.
+	ifs.ignore(tgaHeader[0]);
 
-  // 読み込んだ画像データからテクスチャを作成する.
-  return CreateImage2D(width, height, buf.data(), format, type);
+	// カラーマップを飛ばす.
+	if (tgaHeader[1]) {
+		const int colorMapLength = tgaHeader[5] | (tgaHeader[6] << 8);
+		const int colorMapEntrySize = tgaHeader[7];
+		const int colorMapSize = colorMapLength * colorMapEntrySize / 8;
+		ifs.ignore(colorMapSize);
+	}
+
+	// 画像データを読み込む.
+	const int width = tgaHeader[12] | (tgaHeader[13] << 8);
+	const int height = tgaHeader[14] | (tgaHeader[15] << 8);
+	const int pixelDepth = tgaHeader[16];
+	const int imageSize = width * height * pixelDepth / 8;
+	std::vector<uint8_t> buf(imageSize);
+	ifs.read(buf.data(), imageSize);
+
+	// 画像データが「上から下」で格納されている場合、上下を入れ替える.
+	if (tgaHeader[17] & 0x20) {
+		std::cout << "反転中…";
+		const int lineSize = width * pixelDepth / 8;
+		std::vector<uint8_t> tmp(imageSize);
+		std::vector<uint8_t>::iterator source = buf.begin();
+		std::vector<uint8_t>::iterator destination = tmp.end();
+		for (int i = 0; i < height; ++i) {
+			destination -= lineSize;
+			std::copy(source, source + lineSize, destination);
+			source += lineSize;
+		}
+		buf.swap(tmp);
+	}
+	std::cout << "完了\n";
+
+	GLenum type = GL_UNSIGNED_BYTE;
+	GLenum format = GL_BGRA;
+	if (tgaHeader[2] == 3) {
+		format = GL_RED;
+	}
+	if (tgaHeader[16] == 24) {
+		format = GL_BGR;
+	}
+	else if (tgaHeader[16] == 16) {
+		type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+	}
+
+	imageData->width = width;
+	imageData->height = height;
+	imageData->format = format;
+	imageData->type = type;
+	imageData->data.swap(buf);
+	return true;
+
+
 }
 
 /**

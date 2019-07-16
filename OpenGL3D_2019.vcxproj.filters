@@ -50,6 +50,9 @@
     <ClCompile Include="Src\Mesh.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Terrain.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
@@ -92,6 +95,9 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\Mesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Terrain.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>

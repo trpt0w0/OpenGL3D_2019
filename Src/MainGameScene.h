@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include "Font.h"
 #include "Mesh.h"
+#include "Terrain.h"
 #include <vector>
 
 
@@ -31,7 +32,7 @@ private:
 	SpriteRenderer spriteRenderer;
 	FontRenderer fontRenderer;
 	Mesh::Buffer meshBuffer;
-	
+	Terrain::HeightMap heightMap;
 
 
 };
