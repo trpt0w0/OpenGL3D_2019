@@ -22,7 +22,7 @@ int main()
 	
 		window.UpdateGamePad();
 
-		const float deltaTime = window.DeltaTime();
+		const float deltaTime = 1.0f / 60.0f;//window.DeltaTime();
 
 		sceneStack.Update(deltaTime);
 

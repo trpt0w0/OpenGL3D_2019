@@ -8,6 +8,7 @@
 #include "BufferObject.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "json11.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 #include <unordered_map>
@@ -88,6 +89,10 @@ namespace Mesh{
 			size_t count, GLenum type, size_t iOffset, size_t vOffset) const;
 		Material CreateMaterial(const glm::vec4& color, Texture::Image2DPtr texture) const;
 		bool AddMesh(const char* name, const Primitive& primitive, const Material& aterial);
+		bool SetAttribute(
+			Primitive*, int, const json11::Json&, const json11::Json&, const std::vector<std::vector<char>>&);
+		bool LoadMesh(const char* path);
+
 		FilePtr GetFile(const char* name) const;
 
 		void AddCube(const char* name);
