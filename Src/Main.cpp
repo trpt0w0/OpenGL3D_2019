@@ -21,10 +21,9 @@ int main()
 	for (;!window.ShouldClose();) {
 	
 		window.UpdateGamePad();
+		window.UpdateDeltaTime();
 
-		const float deltaTime = 1.0f / 60.0f;//window.DeltaTime();
-
-		sceneStack.Update(deltaTime);
+		sceneStack.Update(window.DeltaTime());
 
 		// ESCキーが押されたら終了ウィンドウを表示
 		if (window.IsKeyPressed(GLFW_KEY_ESCAPE)) {

@@ -259,6 +259,18 @@ void Window::UpdateGamePad() {
 	gamepad.buttonDown = gamepad.buttons & ~prevButtons;
 }
 
+/**
+*	Œo‰ßŠÔ‚ÌXVˆ—
+*/
+void Window::UpdateDeltaTime(){
+
+	float nowTime = glfwGetTime();
+	deltaTime = std::fmin(nowTime - previousTime, 1.0f / 60.0f);
+	previousTime = nowTime;
+
+	//std::cout << deltaTime << std::endl;
+}
+
 
 
 

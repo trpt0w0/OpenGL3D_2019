@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Actor.cpp" />
     <ClCompile Include="Src\BufferObject.cpp" />
     <ClCompile Include="Src\Font.cpp" />
     <ClCompile Include="Src\GameOverScene.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Src\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Actor.h" />
     <ClInclude Include="Src\BufferObject.h" />
     <ClInclude Include="Src\Font.h" />
     <ClInclude Include="Src\GameOverScene.h" />

@@ -482,9 +482,9 @@ namespace Mesh {
 				const json11::Json& index = pbr["baseColorTexture"]["index"];
 				if (index.is_number()) {
 					const int textureId = index.int_value();
-					const json11::Json& texture = json["textures"]["textureId"];
+					const json11::Json& texture = json["textures"][textureId];
 					const int imageSourceId = texture["source"].int_value();
-					const json11::Json& imageName = json["images"]["imageSourceId"]["name"];
+					const json11::Json& imageName = json["images"][imageSourceId]["name"];
 					if (imageName.is_string()) {
 						texturePath = std::string("Res/") + imageName.string_value() + ".tga";
 					}
@@ -593,19 +593,29 @@ namespace Mesh {
 		const Material m = CreateMaterial(glm::vec4(1), nullptr);
 		AddMesh(name, p, m);
 
-
-
 	}
+
+
+	/**
+	*	シェーダにビュー・プロジェクション行列を設定する
+	*
+	*	@param	matMVP	ビュー・プロジェクション行列
+	*/
+	void Buffer::SetViewProjectionMatrix(const glm::mat4& matMVP) const {
+		progStaticMesh->Use();
+		progStaticMesh->SetViewProjectionMatrix(matMVP);
+		glUseProgram(0);
+	}
+
 
 	/**
 	*	メッシュを描画する
 	*
 	*	@param file		描画するファイル
-	*	@param matVP	描画に使用するビュープロジェクション行列
 	*	@param matM		描画に使用するモデル行列
 	*/
 
-	void Draw(const FilePtr& file, const glm::mat4& matVP, const glm::mat4& matM){
+	void Draw(const FilePtr& file, const glm::mat4& matM){
 		if (!file || file->meshes.empty() || file->materials.empty()) {
 			return;
 		}
@@ -616,7 +626,6 @@ namespace Mesh {
 				p.vao->Bind();
 				const Material& m = file->materials[p.material];
 				m.program->Use();
-				m.program->SetViewProjectionMatrix(matVP);
 				m.program->SetModelMatrix(matM);
 				glActiveTexture(GL_TEXTURE0);
 
@@ -636,9 +645,8 @@ namespace Mesh {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
-
-
 	}
+
 
 
 

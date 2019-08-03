@@ -37,6 +37,7 @@ namespace GLFWEW {
         int GetMouseButton(int button) const;
 		const GamePad& GetGamePad() const;
 		void UpdateGamePad();
+		void UpdateDeltaTime();
 
 	private:
 		Window();

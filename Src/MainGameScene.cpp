@@ -26,6 +26,7 @@ bool MainGameScene::Initialize() {
 	sprites.push_back(spr);
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
+	meshBuffer.LoadMesh("Res/bikuni.gltf");
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
@@ -36,6 +37,10 @@ bool MainGameScene::Initialize() {
 		return false;
 	}
 
+	glm::vec3 startPos(100, 0, 100);
+	startPos.y = heightMap.Height(startPos);
+	player = std::make_shared<StaticMeshActor>(
+		meshBuffer.GetFile("Res/bikuni.gltf"), "Player", 20, startPos);
 
 	return true;
 }
@@ -97,6 +102,10 @@ void MainGameScene::Update(float deltaTime) {
 
 	}
 
+	player->Update(deltaTime);
+	player->UpdateDrawData(deltaTime);
+
+
 	spriteRenderer.BeginUpdate();
 	for (const Sprite& e : sprites) {
 		spriteRenderer.AddVertices(e);
@@ -136,13 +145,16 @@ void MainGameScene::Render() {
 	cubePos.y = heightMap.Height(cubePos);
 	const glm::mat4 matModel = glm::translate(glm::mat4(1), cubePos);
 
-	Mesh::Draw(meshBuffer.GetFile("Cube"), matProj * matView, matModel);
-	Mesh::Draw(meshBuffer.GetFile("Terrain"), matProj * matView, glm::mat4(1));
-	
+	Mesh::Draw(meshBuffer.GetFile("Cube"),matModel);
+	meshBuffer.SetViewProjectionMatrix(matProj * matView);
+	Mesh::Draw(meshBuffer.GetFile("Terrain"), glm::mat4(1));
+	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 	glm::vec3 treePos(110, 0, 110);
 	treePos.y = heightMap.Height(treePos);
 	const glm::mat4 matTreeModel =
 		glm::translate(glm::mat4(1), treePos) * glm::scale(glm::mat4(1), glm::vec3(3));
-	Mesh::Draw(meshBuffer.GetFile("Res/red_pine_tree.gltf"), matProj * matView, matTreeModel);
+	Mesh::Draw(meshBuffer.GetFile("Res/red_pine_tree.gltf"), matTreeModel);
+	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 
+	player->Draw();
 }
