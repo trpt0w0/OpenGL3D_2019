@@ -88,3 +88,75 @@ void StaticMeshActor::Draw() {
 		Mesh::Draw(mesh,matModel);
 	}
 }
+
+/**
+*	格納可能なアクター数を確保する
+*
+*	@param reserveCount	アクターの配列の確保数
+*/
+void ActorList::Reserve(size_t reserveCcunt) {
+	actors.reserve(reserveCcunt);
+}
+
+/**
+*	アクターを追加する
+*
+*	@param	actor 追加するアクター
+*/
+void ActorList::Add(const ActorPtr& actor) {
+	actors.push_back(actor);
+}
+
+/**
+*	アクターを削除する
+*
+*	@param actor　削除するアクター
+*/
+bool ActorList::Remove(const ActorPtr& actor) {
+	for (auto itr = actors.begin(); itr != actors.end(); ++itr) {
+		if (*itr == actor) {
+			actors.erase(itr);
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+*	アクターの状態を更新する
+*
+*	@param deltaTime	前回の更新からの経過時間
+*/
+void ActorList::Update(float deltaTime) {
+	for (const ActorPtr& e : actors) {
+		if (e && e->health > 0) {
+			e->Update(deltaTime);
+		}
+	}
+}
+/**
+*	アクターの描画データを更新する
+*
+*	@param deltaTime 前回の更新からの経過時間
+*/
+void ActorList::UpdateDrawData(float deltaTime) {
+	for (const ActorPtr& e : actors) {
+		if (e && e->health > 0) {
+			e->UpdateDrawData(deltaTime);
+		}
+	}
+}
+
+
+
+
+/**
+*	Actorを描画する
+*/
+void ActorList::Draw() {
+	for (const ActorPtr& e : actors) {
+		if (e && e->health > 0) {
+			e->Draw();
+		}
+	}
+}

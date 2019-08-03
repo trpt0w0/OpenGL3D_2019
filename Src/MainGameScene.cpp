@@ -7,6 +7,8 @@
 #include "StatusScene.h"
 #include "GameOverScene.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <random>
 
 
 /**
@@ -27,6 +29,7 @@ bool MainGameScene::Initialize() {
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/bikuni.gltf");
+	meshBuffer.LoadMesh("Res/oni_small.gltf");
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
@@ -42,6 +45,29 @@ bool MainGameScene::Initialize() {
 	player = std::make_shared<StaticMeshActor>(
 		meshBuffer.GetFile("Res/bikuni.gltf"), "Player", 20, startPos);
 
+	std::mt19937 rand;
+	rand.seed(0);
+
+	// 敵を配置
+	{
+		const size_t oniCount = 100;
+		enemies.Reserve(oniCount);
+		const Mesh::FilePtr mesh = meshBuffer.GetFile("Res/oni_small.gltf");
+		for (size_t i = 0; i < oniCount; ++i) {
+			// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
+			glm::vec3 position(0);
+			position.x = std::uniform_real_distribution<float>(50, 150)(rand);
+			position.z = std::uniform_real_distribution<float>(50, 150)(rand);
+			position.y = heightMap.Height(position);
+			// 敵の向きをランダムに選択
+			glm::vec3 rotation(0);
+			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
+			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
+				mesh, "Kooni",13, position, rotation);
+			enemies.Add(p);
+
+		}
+	}
 	return true;
 }
 
@@ -103,8 +129,10 @@ void MainGameScene::Update(float deltaTime) {
 	}
 
 	player->Update(deltaTime);
+	enemies.Update(deltaTime);
+	
 	player->UpdateDrawData(deltaTime);
-
+	enemies.UpdateDrawData(deltaTime);
 
 	spriteRenderer.BeginUpdate();
 	for (const Sprite& e : sprites) {
@@ -157,4 +185,5 @@ void MainGameScene::Render() {
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 
 	player->Draw();
+	enemies.Draw();
 }
