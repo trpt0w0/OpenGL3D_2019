@@ -11,6 +11,34 @@
 #include <random>
 
 
+
+/**
+*	衝突を解決する
+*
+*	@param a	衝突したアクターその1
+*	@param b	衝突したアクターその2
+*	@param p	衝突位置
+*/
+void PlayerCollisionHandler(const ActorPtr& a, const ActorPtr& b, const glm::vec3& p){
+	const glm::vec3 v = a->colWorld.center - p;
+	// 衝突位置との距離が近すぎないか調べる
+	if (dot(v,v) > FLT_EPSILON) {
+		// aとbに重ならない位置まで移動
+		const glm::vec3 vn = normalize(v);
+		const float radiusSum = a->colWorld.r + b->colWorld.r;
+		const float distance = radiusSum - glm::length(v) + 0.01f;
+		a->position += vn * distance;
+		a->colWorld.center += vn * distance;
+	} else {
+		// 移動を取り消す（距離が近すぎる場合の例外処理）
+		const float deltaTime = static_cast<float> (GLFWEW::Window::Instance().DeltaTime());
+		const glm::vec3 deltaVelocity = a->velocity * deltaTime;
+		a->position -= deltaVelocity;
+		a->colWorld.center -= deltaVelocity;
+	}
+
+}
+
 /**
 *	シーンを初期化する
 *
@@ -44,7 +72,7 @@ bool MainGameScene::Initialize() {
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<StaticMeshActor>(
 		meshBuffer.GetFile("Res/bikuni.gltf"), "Player", 20, startPos);
-
+	player->colLocal = Collision::Sphere{ glm::vec3(0), 0.5f };
 	std::mt19937 rand;
 	rand.seed(0);
 
@@ -64,6 +92,7 @@ bool MainGameScene::Initialize() {
 			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
 			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
 				mesh, "Kooni",13, position, rotation);
+			p->colLocal = Collision::Sphere{ glm::vec3(0), 1.0f };
 			enemies.Add(p);
 
 		}
@@ -78,7 +107,7 @@ bool MainGameScene::Initialize() {
 void MainGameScene::ProcessInput() {
 	GLFWEW::Window& window = GLFWEW::Window::Instance();
 
-	// カメラ操作
+	// プレイヤー操作
 	const GamePad gamepad = window.GetGamePad();
 
 	glm::vec3 velocity(0);
@@ -97,9 +126,12 @@ void MainGameScene::ProcessInput() {
 	}
 
 	if (velocity.x || velocity.z) {
-		velocity = normalize(velocity) * 20.0f;
+		velocity = normalize(velocity);
+		player->rotation.y = std::atan2(-velocity.z, velocity.x) + glm::radians(90.0f);
+		velocity *= 6.0f;
 	}
-	camera.velocity = velocity;
+
+	player->velocity = velocity;
 
 
 	if (!flag) {
@@ -121,15 +153,19 @@ void MainGameScene::Update(float deltaTime) {
 
 
 	//カメラの状態の更新
-	if (dot(camera.velocity, camera.velocity)) {
-		camera.target += camera.velocity * deltaTime;
-		camera.target.y = heightMap.Height(camera.target);
+	
+	{
+		camera.target = player->position;
 		camera.position = camera.target + glm::vec3(0, 50, 50);
 
 	}
 
 	player->Update(deltaTime);
 	enemies.Update(deltaTime);
+
+	player->position.y = heightMap.Height(player->position);
+	DetectCollision(player, enemies, PlayerCollisionHandler);
+	player->position.y = heightMap.Height(player->position);
 	
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);
