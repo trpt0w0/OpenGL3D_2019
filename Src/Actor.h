@@ -32,9 +32,8 @@ public:
 	glm::vec3 scale = glm::vec3(1);
 	glm::vec3 velocity = glm::vec3(0);		// ‘¬“x
 	int health = 0;		// ‘Ì—Í
-	Collision::Sphere colLocal;
-	Collision::Sphere colWorld;
-
+	Collision::Shape colLocal;
+	Collision::Shape colWorld;
 
 };
 
