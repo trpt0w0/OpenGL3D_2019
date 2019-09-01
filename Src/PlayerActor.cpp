@@ -69,7 +69,7 @@ void PlayerActor::Update(float deltaTime) {
 			GetMesh()->Play("Jump");
 			state = State::jump;
 		} else {
-			const float horizontalSpeed = velocity.x * velocity.x * velocity.z * velocity.z;
+			const float horizontalSpeed = velocity.x * velocity.x + velocity.z * velocity.z;
 			if (horizontalSpeed == 0) {
 				GetMesh()->Play("Idle");
 				state = State::idle;
@@ -83,7 +83,7 @@ void PlayerActor::Update(float deltaTime) {
 			state = State::jump;
 		}
 		else {
-			const float horizontalSpeed = velocity.x * velocity.x * velocity.z * velocity.z;
+			const float horizontalSpeed = velocity.x * velocity.x + velocity.z * velocity.z;
 			if (horizontalSpeed != 0) {
 				GetMesh()->Play("Run");
 				state = State::run;
@@ -124,7 +124,7 @@ void PlayerActor::CheckRun(const GamePad& gamepad) {
 	glm::vec3 move(0);
 	if (gamepad.buttons & GamePad::DPAD_UP) {
 		move += front;
-	}else if(gamepad.buttonDown & GamePad::DPAD_DOWN) {
+	}else if(gamepad.buttons & GamePad::DPAD_DOWN) {
 		move -= front;
 	}
 
@@ -146,7 +146,7 @@ void PlayerActor::CheckRun(const GamePad& gamepad) {
 			const float minGradient = glm::radians(-60.0f);	//沿うことのできる勾配の最小値
 			const float maxGradient = glm::radians(60.0f);	// 沿うことのできる勾配の最大値
 			const float frontY =
-				heightMap->Height(position * move * 0.05f) - position.y - 0.01f;
+				heightMap->Height(position + move * 0.05f) - position.y - 0.01f;
 			const float gradient =
 				glm::clamp(std::atan2(frontY, 0.05f), minGradient, maxGradient);
 

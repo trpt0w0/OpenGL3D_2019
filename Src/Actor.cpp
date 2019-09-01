@@ -261,7 +261,7 @@ void DetectCollision(ActorList& a, ActorList& b, CollisionHandlerType handler) {
 
 			glm::vec3 pa, pb;
 			if (Collision::TestShapeShape(actorA->colWorld, actorB->colWorld, &pa, &pb)) {
-				handler(actorA, actorB, pb);
+				handler(actorA, actorB, pa);
 
 				if(actorA->health <= 0){
 					break;

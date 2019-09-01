@@ -68,9 +68,8 @@ bool MainGameScene::Initialize() {
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
-	//meshBuffer.LoadSkeletalMesh("Res/oni_small.gltf");
-	meshBuffer.LoadMesh("Res/oni_small.gltf");
-
+	meshBuffer.LoadSkeletalMesh("Res/oni_small.gltf");
+	
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
@@ -104,9 +103,8 @@ bool MainGameScene::Initialize() {
 
 	// 敵を配置
 	{
-		const size_t oniCount = 50;
+		const size_t oniCount = 30;
 		enemies.Reserve(oniCount);
-		const Mesh::FilePtr mesh = meshBuffer.GetFile("Res/oni_small.gltf");
 		for (size_t i = 0; i < oniCount; ++i) {
 			// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
 			glm::vec3 position(0);
@@ -116,12 +114,10 @@ bool MainGameScene::Initialize() {
 			// 敵の向きをランダムに選択
 			glm::vec3 rotation(0);
 			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
-			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
-				mesh, "Kooni", 13, position, rotation);
-			//const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
-			//SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
-				//mesh, "Kooni", 13, position,rotation);
-			//p->GetMesh()->Play("Run");
+			const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
+			SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
+				mesh, "Kooni", 13, position,rotation);
+			p->GetMesh()->Play("Run");
 			p->colLocal = Collision::CreateCapsule(
 				glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 0.5f );
 			enemies.Add(p);
@@ -172,7 +168,7 @@ void MainGameScene::Update(float deltaTime) {
 	objects.Update(deltaTime);
 
 	DetectCollision(player, enemies);
-	DetectCollision(player, objects);
+	DetectCollision(player, objects, PlayerCollisionHandler);
 	
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);

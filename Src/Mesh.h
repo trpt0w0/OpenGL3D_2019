@@ -18,7 +18,7 @@
 namespace Mesh{
 
 	//æséŒ¾
-	class Mesh;
+	struct Mesh;
 	using MeshPtr = std::shared_ptr<Mesh>;
 	class Buffer;
 	using BufferPtr = std::shared_ptr<Buffer>;
