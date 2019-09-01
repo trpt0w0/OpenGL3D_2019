@@ -29,11 +29,14 @@ void PlayerCollisionHandler(const ActorPtr& a, const ActorPtr& b, const glm::vec
 		float radiusSum = a->colWorld.s.r ;
 		switch (b->colWorld.type) {
 		case Collision::Shape::Type::sphere : radiusSum += b->colWorld.s.r; break;
-		case Collision::Shape::Type::capsule: radiusSum += b->colWorld.s.r; break;
+		case Collision::Shape::Type::capsule: radiusSum += b->colWorld.c.r; break;
 		}
 		const float distance = radiusSum - glm::length(v) + 0.01f;
 		a->position += vn * distance;
 		a->colWorld.s.center += vn * distance;
+		if (a->velocity.y < 0 && vn.y >= glm::cos(glm::radians(60.0f))) {
+			a->velocity.y = 0;
+		}
 	} else {
 		// 移動を取り消す（距離が近すぎる場合の例外処理）
 		const float deltaTime = static_cast<float> (GLFWEW::Window::Instance().DeltaTime());
@@ -63,6 +66,7 @@ bool MainGameScene::Initialize() {
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/bikuni.gltf");
 	meshBuffer.LoadMesh("Res/oni_small.gltf");
+	meshBuffer.LoadMesh("Res/wall_stone.gltf");
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
@@ -75,16 +79,28 @@ bool MainGameScene::Initialize() {
 
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
-	player = std::make_shared<StaticMeshActor>(
-		meshBuffer.GetFile("Res/bikuni.gltf"), "Player", 20, startPos);
-	player->colLocal = Collision::CreateSphere(glm::vec3(0, 0.7f, 0), 0.7f );
+	player = std::make_shared<PlayerActor>(
+		meshBuffer.GetFile("Res/bikuni.gltf"),startPos, glm::vec3(0), &heightMap);
+	
+	// 石壁を配置
+	{
+		const Mesh::FilePtr meshStoneWall = meshBuffer.GetFile("Res/wall_stone.gltf");
+		glm::vec3 position = startPos + glm::vec3(3, 0, 3);
+		position.y = heightMap.Height(position);
+		StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
+			meshStoneWall, "StoneWall", 100, position, glm::vec3(0, 0.5f, 0));
+		p->colLocal = Collision::CreateOBB(glm::vec3(0, 0, 0),
+			glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1), glm::vec3(2, 2, 0.5f));
+		objects.Add(p);
+	
+	}
 
 	std::mt19937 rand;
 	rand.seed(0);
 
 	// 敵を配置
 	{
-		const size_t oniCount = 100;
+		const size_t oniCount = 50;
 		enemies.Reserve(oniCount);
 		const Mesh::FilePtr mesh = meshBuffer.GetFile("Res/oni_small.gltf");
 		for (size_t i = 0; i < oniCount; ++i) {
@@ -98,7 +114,8 @@ bool MainGameScene::Initialize() {
 			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
 			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
 				mesh, "Kooni",13, position, rotation);
-			p->colLocal = Collision::CreateCapsule(glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 1.0f );
+			p->colLocal = Collision::CreateCapsule(
+				glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 0.5f );
 			enemies.Add(p);
 
 		}
@@ -137,8 +154,13 @@ void MainGameScene::ProcessInput() {
 		velocity *= 6.0f;
 	}
 
-	player->velocity = velocity;
-
+	player->velocity.x = velocity.x;
+	player->velocity.z = velocity.z;
+	
+	// ジャンプ
+	if (gamepad.buttonDown & GamePad::B) {
+		player->Jump();
+	}
 
 	if (!flag) {
 		if (window.GetGamePad().buttonDown & GamePad::X) {
@@ -168,13 +190,14 @@ void MainGameScene::Update(float deltaTime) {
 
 	player->Update(deltaTime);
 	enemies.Update(deltaTime);
+	objects.Update(deltaTime);
 
-	player->position.y = heightMap.Height(player->position);
 	DetectCollision(player, enemies, PlayerCollisionHandler);
-	player->position.y = heightMap.Height(player->position);
+	DetectCollision(player, objects, PlayerCollisionHandler);
 	
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);
+	objects.UpdateDrawData(deltaTime);
 
 	spriteRenderer.BeginUpdate();
 	for (const Sprite& e : sprites) {
@@ -228,4 +251,5 @@ void MainGameScene::Render() {
 
 	player->Draw();
 	enemies.Draw();
+	objects.Draw();
 }

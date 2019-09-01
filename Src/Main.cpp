@@ -20,6 +20,7 @@ int main()
 
 	for (;!window.ShouldClose();) {
 	
+		window.Update();
 		window.UpdateGamePad();
 		window.UpdateDeltaTime();
 
@@ -31,7 +32,7 @@ int main()
 				break;
 			}
 		}
-		
+
 
 		// バックバッファを削除する
 		glClearColor(0.8f, 0.2f, 0.1f, 1.0f);

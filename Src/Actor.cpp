@@ -31,12 +31,12 @@ Actor::Actor(const std::string& name, int health,
 */
 void Actor::Update(float deltaTime) {
 	
-	position += velocity * deltaTime;
+	position += velocity * 0.01f;
 
 	// è’ìÀîªíËÇÃçXêV
 	const glm::mat4 matT = glm::translate(glm::mat4(1), position);
 	const glm::mat4 matR_Y = glm::rotate(glm::mat4(1), rotation.y, glm::vec3(0, 1, 0));
-	const glm::mat4 matR_ZY = glm::rotate(matR_Y, rotation.z, glm::vec3(0, 0, 1));
+	const glm::mat4 matR_ZY = glm::rotate(matR_Y, rotation.z, glm::vec3(0, 0, -1));
 	const glm::mat4 matR_XZY = glm::rotate(matR_ZY,rotation.x, glm::vec3(1, 0, 0));
 	const glm::mat4 matS = glm::scale(glm::mat4(1),scale);
 	const glm::mat4 matModel = matT * matR_XZY * matS;
@@ -51,6 +51,14 @@ void Actor::Update(float deltaTime) {
 		colWorld.c.seg.a = matModel * glm::vec4(colLocal.c.seg.a, 1);
 		colWorld.c.seg.b = matModel * glm::vec4(colLocal.c.seg.b, 1);
 		colWorld.c.r = colLocal.c.r;
+		break;
+
+	case Collision::Shape::Type::obb :
+		colWorld.obb.center = matModel * glm::vec4(colLocal.obb.center, 1);
+		for (size_t i = 0; i < 3; ++i) {
+			colWorld.obb.axis[i] = matR_XZY * glm::vec4(colLocal.obb.axis[i], 1);
+		}
+		colWorld.obb.e = colLocal.obb.e;
 		break;
 	}
 

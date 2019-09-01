@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Terrain.h"
 #include "Actor.h"
+#include "PlayerActor.h"
 #include <vector>
 
 
@@ -34,8 +35,10 @@ private:
 	FontRenderer fontRenderer;
 	Mesh::Buffer meshBuffer;
 	Terrain::HeightMap heightMap;
-	StaticMeshActorPtr player;
+	PlayerActorPtr player;
 	ActorList enemies;
+	ActorList trees;
+	ActorList objects;
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

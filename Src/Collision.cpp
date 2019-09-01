@@ -39,6 +39,31 @@ namespace Collision {
 		return result;
 	}
 
+
+	/**
+	*	有向境界線ボックスを作成する
+	*
+	*	@param center	有向境界線ボックスの中心座標
+	*	@param axisX	X軸の向き
+	*	@param axisY	Y軸の向き
+	*	@param axisZ	Z軸の向き
+	*	@param e		XYZ軸方向の向き
+	*
+	*	@return	有向境界線ボックスを保持する汎用衝突形状オブジェクト
+	*/
+
+	Shape CreateOBB(const glm::vec3& center, const glm::vec3& axisX, 
+		const glm::vec3& axisY,const glm::vec3& axisZ, const glm::vec3& e) {
+
+		Shape result;
+		result.type = Shape::Type::obb;
+		result.obb = OrientedBoundingBox{
+			center, {normalize(axisX), normalize(axisY), normalize(axisZ)} , e };
+		return result;
+		
+	}
+
+
 	
 	/**
 	*	球と球が衝突しているか調べる
@@ -96,6 +121,48 @@ namespace Collision {
 		return glm::dot(distance, distance) <= radiusSum * radiusSum;	
 
 	}
+
+	/**
+	*	OBBと点の最近接点を調べる
+	*
+	*	@param obb	有向境界ボックス
+	*	@param p	点
+	*
+	*	@return	obbとpの最近接点
+	*/
+	glm::vec3 ClosestPointOBB(const OrientedBoundingBox& obb, const glm::vec3& p) {
+		const glm::vec3 d = p - obb.center;
+		glm::vec3 q = obb.center;
+		for (int i = 0; i < 3; ++i) {
+			float distance = dot(d, obb.axis[i]);
+			if (distance >= obb.e[i]) {
+				distance = obb.e[i];
+			}else if (distance  <= -obb.e[i]) {
+				distance = -obb.e[i];
+			}
+
+			q += distance * obb.axis[i];
+ 		}
+		return q;
+	}
+
+
+	/**
+	*	球とOBBが衝突しているか調べる
+	*
+	*	@param s	 球
+	*	@param obb	 有向境界ボックス
+	*	@param p	 最近接点の格納先
+	*
+	*	@retval	true	 衝突している
+	*	@retval false	 衝突していない
+	*/
+	bool TestSphereOBB(const Sphere& s, const OrientedBoundingBox& obb, glm::vec3* p) {
+		*p = ClosestPointOBB(obb, s.center);
+		const glm::vec3 distance = *p - s.center;
+		return dot(distance, distance) <= s.r * s.r;
+	}
+
 	
 	/**
 	*	シェイプ同士が衝突しているか調べる
@@ -121,6 +188,11 @@ namespace Collision {
 				if (TestSphereCapsule(a.s, b.c,pb)) {
 					*pa = a.s.center;
 					return true;
+				}else if(b.type == Shape::Type::obb) {
+					if (TestSphereOBB(a.s, b.obb, pb)) {
+						*pa = a.s.center;
+						return true;
+					}
 				}
 			}
 		}else if(a.type == Shape::Type::capsule) {
@@ -129,6 +201,12 @@ namespace Collision {
 					*pb = b.s.center;
 					return true;
 				}
+			}else if (a.type == Shape::Type::obb) {
+				if (TestSphereOBB(b.s, a.obb,pa)) {
+					*pb = b.s.center;
+					return true;
+				}
+
 			}
 		}
 		return false;
