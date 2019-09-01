@@ -136,11 +136,14 @@
     <ClCompile Include="Src\PlayerActor.cpp" />
     <ClCompile Include="Src\Scene.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
+    <ClCompile Include="Src\SkeletalMesh.cpp" />
+    <ClCompile Include="Src\SkeletalMeshActor.cpp" />
     <ClCompile Include="Src\Sprite.cpp" />
     <ClCompile Include="Src\StatusScene.cpp" />
     <ClCompile Include="Src\Terrain.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\TitleScene.cpp" />
+    <ClCompile Include="Src\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Actor.h" />
@@ -157,11 +160,14 @@
     <ClInclude Include="Src\PlayerActor.h" />
     <ClInclude Include="Src\Scene.h" />
     <ClInclude Include="Src\Shader.h" />
+    <ClInclude Include="Src\SkeletalMesh.h" />
+    <ClInclude Include="Src\SkeletalMeshActor.h" />
     <ClInclude Include="Src\Sprite.h" />
     <ClInclude Include="Src\StatusScene.h" />
     <ClInclude Include="Src\Terrain.h" />
     <ClInclude Include="Src\Texture.h" />
     <ClInclude Include="Src\TitleScene.h" />
+    <ClInclude Include="Src\UniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

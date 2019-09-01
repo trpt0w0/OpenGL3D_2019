@@ -65,6 +65,15 @@
     <ClCompile Include="Src\PlayerActor.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\SkeletalMesh.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkeletalMeshActor.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UniformBuffer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
@@ -122,6 +131,15 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\PlayerActor.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkeletalMesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkeletalMeshActor.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UniformBuffer.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,36 +2,39 @@
 *	@file Main.cpp
 *
 */
-#include "TitleScene.h"
-#include "GLFWEW.h"
+
+
 #include <Windows.h>
+#include "GLFWEW.h"
+#include "TitleScene.h"
 #include <iostream>
-
-
+#include "SkeletalMesh.h"
 int main() 
 {
 
 	auto& window = GLFWEW::Window::Instance();
 	window.Init(800, 600, "Title");
+	// スケルタルメッシュ・アニメーションを利用可能にする
+	Mesh::SkeletalAnimation::Initialize();
 
 	SceneStack& sceneStack = SceneStack::Instance();
 	sceneStack.Push(std::make_shared<TitleScene>());
 	
 
 	for (;!window.ShouldClose();) {
+
 	
 		window.Update();
 		window.UpdateGamePad();
 		window.UpdateDeltaTime();
+		// スケルタル・アニメーション用データの作成準備
+		Mesh::SkeletalAnimation::ResetUniformData();
 
 		sceneStack.Update(window.DeltaTime());
 
-		// ESCキーが押されたら終了ウィンドウを表示
-		if (window.IsKeyPressed(GLFW_KEY_ESCAPE)) {
-			if (MessageBox(nullptr, "ゲーム終了しますか？", "終了", MB_OKCANCEL) == IDOK) {
-				break;
-			}
-		}
+		// スケルタル・アニメーション用データをGPUにメモリに転送
+		Mesh::SkeletalAnimation::UploadUniformData();
+
 
 
 		// バックバッファを削除する
@@ -42,11 +45,20 @@ int main()
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 
+		// ESCキーが押されたら終了ウィンドウを表示
+		if (window.IsKeyPressed(GLFW_KEY_ESCAPE)) {
+			if (MessageBox(nullptr, "ゲーム終了しますか？", "終了", MB_OKCANCEL) == IDOK) {
+				break;
+			}
+		}
+
 
 		sceneStack.Render();
 
 		window.SwapBuffers();
 	}
+
+	Mesh::SkeletalAnimation::Finalize();
 
 	return 0;
 }

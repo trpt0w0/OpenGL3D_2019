@@ -6,6 +6,8 @@
 #include "MainGameScene.h"
 #include "StatusScene.h"
 #include "GameOverScene.h"
+#include "Mesh.h"
+#include "SkeletalMeshActor.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <random>
@@ -64,9 +66,11 @@ bool MainGameScene::Initialize() {
 	sprites.push_back(spr);
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
-	meshBuffer.LoadMesh("Res/bikuni.gltf");
-	meshBuffer.LoadMesh("Res/oni_small.gltf");
+	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
+	//meshBuffer.LoadSkeletalMesh("Res/oni_small.gltf");
+	meshBuffer.LoadMesh("Res/oni_small.gltf");
+
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
@@ -79,9 +83,9 @@ bool MainGameScene::Initialize() {
 
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
-	player = std::make_shared<PlayerActor>(
-		meshBuffer.GetFile("Res/bikuni.gltf"),startPos, glm::vec3(0), &heightMap);
-	
+	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
+
+
 	// 石壁を配置
 	{
 		const Mesh::FilePtr meshStoneWall = meshBuffer.GetFile("Res/wall_stone.gltf");
@@ -113,7 +117,11 @@ bool MainGameScene::Initialize() {
 			glm::vec3 rotation(0);
 			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
 			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(
-				mesh, "Kooni",13, position, rotation);
+				mesh, "Kooni", 13, position, rotation);
+			//const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
+			//SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
+				//mesh, "Kooni", 13, position,rotation);
+			//p->GetMesh()->Play("Run");
 			p->colLocal = Collision::CreateCapsule(
 				glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 0.5f );
 			enemies.Add(p);
@@ -131,36 +139,7 @@ void MainGameScene::ProcessInput() {
 	GLFWEW::Window& window = GLFWEW::Window::Instance();
 
 	// プレイヤー操作
-	const GamePad gamepad = window.GetGamePad();
-
-	glm::vec3 velocity(0);
-
-	if (gamepad.buttons & GamePad::DPAD_LEFT) {
-		velocity.x = -1;
-	} else if (gamepad.buttons & GamePad::DPAD_RIGHT) {
-		velocity.x = 1;
-	}
-
-	if (gamepad.buttons & GamePad::DPAD_DOWN) {
-		velocity.z = 1;
-
-	} else if (gamepad.buttons & GamePad::DPAD_UP) {
-		velocity.z = -1;
-	}
-
-	if (velocity.x || velocity.z) {
-		velocity = normalize(velocity);
-		player->rotation.y = std::atan2(-velocity.z, velocity.x) + glm::radians(90.0f);
-		velocity *= 6.0f;
-	}
-
-	player->velocity.x = velocity.x;
-	player->velocity.z = velocity.z;
-	
-	// ジャンプ
-	if (gamepad.buttonDown & GamePad::B) {
-		player->Jump();
-	}
+	player->ProcessInput();
 
 	if (!flag) {
 		if (window.GetGamePad().buttonDown & GamePad::X) {
@@ -192,8 +171,8 @@ void MainGameScene::Update(float deltaTime) {
 	enemies.Update(deltaTime);
 	objects.Update(deltaTime);
 
-	DetectCollision(player, enemies, PlayerCollisionHandler);
-	DetectCollision(player, objects, PlayerCollisionHandler);
+	DetectCollision(player, enemies);
+	DetectCollision(player, objects);
 	
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);

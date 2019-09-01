@@ -3,6 +3,7 @@
 */
 #define NOMINMAX
 #include "Mesh.h"
+#include "SkeletalMesh.h"
 #include"json11.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <fstream>
@@ -189,6 +190,14 @@ namespace Mesh {
 			return false;
 		}
 
+		// スケルタルメッシュ用のシェーダーを読み込む
+		progSkeletalMesh = Shader::Program::Create(
+			"Res/SkeletalMesh.vert", "Res/SkeletalMesh.frag");
+		if (progSkeletalMesh->IsNull()) {
+			return false;
+		}
+		SkeletalAnimation::BindUniformBlock(progSkeletalMesh);
+
 		vboEnd = 0;
 		iboEnd = 0;
 		files.reserve(100);
@@ -283,6 +292,7 @@ namespace Mesh {
 		m.baseColor = color;
 		m.texture = texture;
 		m.program = progStaticMesh;
+		m.progSkeletalMesh = progSkeletalMesh;
 		return m;
 	}
 
@@ -601,9 +611,11 @@ namespace Mesh {
 	*
 	*	@param	matMVP	ビュー・プロジェクション行列
 	*/
-	void Buffer::SetViewProjectionMatrix(const glm::mat4& matMVP) const {
+	void Buffer::SetViewProjectionMatrix(const glm::mat4& matVP) const {
 		progStaticMesh->Use();
-		progStaticMesh->SetViewProjectionMatrix(matMVP);
+		progStaticMesh->SetViewProjectionMatrix(matVP);
+		progSkeletalMesh->Use();
+		progSkeletalMesh->SetViewProjectionMatrix(matVP);
 		glUseProgram(0);
 	}
 

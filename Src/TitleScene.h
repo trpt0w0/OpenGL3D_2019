@@ -8,6 +8,7 @@
 #include "Font.h"
 #include <vector>
 
+
 /**
 *	ƒ^ƒCƒgƒ‹‰æ–Ê
 */

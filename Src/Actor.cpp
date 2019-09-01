@@ -202,7 +202,13 @@ void DetectCollision(const ActorPtr& a,const ActorPtr& b, CollisionHandlerType h
 	
 	glm::vec3 pa, pb;
 	if (Collision::TestShapeShape(a->colLocal, b->colLocal, &pa, &pb)) {
-		handler(a, b, pb);
+		if (handler) {
+			handler(a, b, pb);
+
+		} else {
+			a->OnHit(b, pb);
+			b->OnHit(a, pa);
+		}
 	}
 
 }
