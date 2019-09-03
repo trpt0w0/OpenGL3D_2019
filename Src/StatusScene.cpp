@@ -62,7 +62,6 @@ void StatusScene::Update(float deltaTime) {
 
 	fontRenderer.BeginUpdate();
 	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"ステータス画面");
-	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
 	fontRenderer.EndUpdate();
 }
 

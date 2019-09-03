@@ -54,6 +54,7 @@ void TitleScene::Update(float deltaTime) {
 	const float h = window.Height();
 	const float lineHeight = fontRenderer.LineHeight();
 	fontRenderer.BeginUpdate();
+	fontRenderer.Color(glm::vec4(0, 255, 255, 255));
 	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"タイトル画面");
 	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
 	fontRenderer.EndUpdate();

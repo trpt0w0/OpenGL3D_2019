@@ -56,6 +56,7 @@ public:
 	virtual ~StaticMeshActor() = default;
 
 	virtual void Draw() override;
+	virtual void OnHit(const ActorPtr&, const glm::vec3&) {}
 	const Mesh::FilePtr& GetMesh() const { return mesh; }
 
 private:

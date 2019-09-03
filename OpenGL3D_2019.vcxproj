@@ -146,6 +146,7 @@
     <ClCompile Include="Src\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Src\Actor.h" />
     <ClInclude Include="Src\BufferObject.h" />
     <ClInclude Include="Src\Collision.h" />
@@ -175,6 +176,9 @@
     <None Include="Res\Sprite.vert" />
     <None Include="Res\StaticMesh.frag" />
     <None Include="Res\StaticMesh.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGL3D_2019.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

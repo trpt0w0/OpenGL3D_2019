@@ -89,7 +89,7 @@ namespace Terrain {
 			const float h0 = heights[index.y * size.x + index.x];
 			const float h1 = heights[index.y * size.x + (index.x + 1)];
 			const float h2 = heights[(index.y + 1) * size.x + index.x];
-			return  h0 + (h1 - h0) + offset.x + (h2 - h0) * offset.y;
+			return  h0 + (h1 - h0) * offset.x + (h2 - h0) * offset.y;
 		} else {
 			const float h0 = heights[(index.y + 1) * size.x + (index.x + 1)];
 			const float h1 = heights[(index.y + 1) * size.x + index.x];

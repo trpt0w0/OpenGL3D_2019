@@ -36,7 +36,7 @@ void Actor::Update(float deltaTime) {
 	// Õ“Ë”»’è‚ÌXV
 	const glm::mat4 matT = glm::translate(glm::mat4(1), position);
 	const glm::mat4 matR_Y = glm::rotate(glm::mat4(1), rotation.y, glm::vec3(0, 1, 0));
-	const glm::mat4 matR_ZY = glm::rotate(matR_Y, rotation.z, glm::vec3(0, 0, -1));
+	const glm::mat4 matR_ZY	= glm::rotate(matR_Y, rotation.z, glm::vec3(0, 0, -1));
 	const glm::mat4 matR_XZY = glm::rotate(matR_ZY,rotation.x, glm::vec3(1, 0, 0));
 	const glm::mat4 matS = glm::scale(glm::mat4(1),scale);
 	const glm::mat4 matModel = matT * matR_XZY * matS;
@@ -206,8 +206,8 @@ void DetectCollision(const ActorPtr& a,const ActorPtr& b, CollisionHandlerType h
 			handler(a, b, pb);
 
 		} else {
-			a->OnHit(b, pb);
-			b->OnHit(a, pa);
+			//a->OnHit(b, pb);
+			//b->OnHit(a, pa);
 		}
 	}
 
@@ -231,14 +231,19 @@ void DetectCollision(const ActorPtr& a, ActorList& b, CollisionHandlerType handl
 		}
 
 		glm::vec3 pa, pb;
-		if (Collision::TestShapeShape(a->colWorld, actorB->colWorld, &pa, &pb)){
+		if (Collision::TestShapeShape(a->colWorld, actorB->colWorld, &pa, &pb)) {
 			handler(a, actorB, pb);
+		}else {
+			//a->OnHit(actorB, pb);
+			//actorB->OnHit(a, pa);
 
-			if (a->health <= 0) {
-				break;
-			}
-			
 		}
+
+		if (a->health <= 0) {
+				break;
+		}
+			
+		
 	}
 }
 
@@ -262,11 +267,15 @@ void DetectCollision(ActorList& a, ActorList& b, CollisionHandlerType handler) {
 			glm::vec3 pa, pb;
 			if (Collision::TestShapeShape(actorA->colWorld, actorB->colWorld, &pa, &pb)) {
 				handler(actorA, actorB, pa);
-
-				if(actorA->health <= 0){
-					break;
-				}
+			} else {
+				actorA->OnHit(actorB, pb);
+				actorB->OnHit(actorA, pa);
 			}
+				
+			if(actorA->health <= 0){
+					break;
+			}
+			
 		}
 	}
 

@@ -142,6 +142,7 @@
     <ClInclude Include="Src\UniformBuffer.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -157,5 +158,10 @@
     <None Include="Res\StaticMesh.frag">
       <Filter>Res</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OpenGL3D_2019.rc">
+      <Filter>Res</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

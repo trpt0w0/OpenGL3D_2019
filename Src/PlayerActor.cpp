@@ -221,5 +221,6 @@ void PlayerActor::OnHit(const ActorPtr& b, const glm::vec3& p) {
 		position -= deltaVelocity;
 		colWorld.s.center -= deltaVelocity;
 	}
+
 	SetBoardingActor(b);
 }

@@ -170,6 +170,7 @@ bool FontRenderer::AddString(const glm::vec2& position , const wchar_t* str) {
 			 
 			Sprite sprite(textures[info.page]);
 			sprite.Position(spritePos);
+			sprite.Color(color);
 			sprite.Rectangle({ info.uv, info.size });
 			if (!spriteRenderer.AddVertices(sprite)) {
 				return false;
@@ -210,4 +211,22 @@ void FontRenderer::Draw(const glm::vec2& screenSize) const{
 */
 float FontRenderer::LineHeight() const {
 	return lineHeight;
+}
+
+/**
+*	文字色を設定する
+*
+*	@param c	文字色
+*/
+void FontRenderer::Color(const glm::vec4& c) {
+	color = c;
+}
+
+/**
+*	文字色を取得する
+*
+*	@return　文字色
+*/
+const glm::vec4 FontRenderer::Color() const {
+	return color;
 }

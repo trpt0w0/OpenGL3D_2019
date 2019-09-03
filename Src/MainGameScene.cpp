@@ -61,9 +61,11 @@ bool MainGameScene::Initialize() {
 	sprites.reserve(100);
 	fontRenderer.LoadFromFile("Res/font.fnt");
 
+	
 	Sprite spr(Texture::Image2D::Create("Res/TitleBg.tga"));
 	spr.Scale(glm::vec2(2));
 	sprites.push_back(spr);
+	
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
@@ -84,7 +86,7 @@ bool MainGameScene::Initialize() {
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
 
-
+	
 	// 石壁を配置
 	{
 		const Mesh::FilePtr meshStoneWall = meshBuffer.GetFile("Res/wall_stone.gltf");
@@ -122,6 +124,22 @@ bool MainGameScene::Initialize() {
 				glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 0.5f );
 			enemies.Add(p);
 
+		}	
+	}
+	// 木を配置
+	{
+		const size_t treeCount = 50;
+		trees.Reserve(treeCount);
+		const Mesh::FilePtr meshtree = meshBuffer.GetFile("Res/red_pine_tree.gltf");
+		for (int i = 0; i <= treeCount; ++i) {
+			glm::vec3 position(0);
+			position.x = std::uniform_real_distribution<float>(50, 150)(rand);
+			position.z = std::uniform_real_distribution<float>(50, 150)(rand);
+			position.y = heightMap.Height(position);
+			StaticMeshActorPtr p = std::make_shared<StaticMeshActor>(meshtree, "trees", 100, position);
+			p->colLocal = Collision::CreateCapsule(glm::vec3(0), glm::vec3(0, 4, 0), 0.5f);
+			trees.Add(p);
+
 		}
 	}
 	return true;
@@ -138,7 +156,7 @@ void MainGameScene::ProcessInput() {
 	player->ProcessInput();
 
 	if (!flag) {
-		if (window.GetGamePad().buttonDown & GamePad::X) {
+		if (window.GetGamePad().buttonDown & GamePad::START) {
 			flag = true;
 			SceneStack::Instance().Push(std::make_shared<StatusScene>());
 		}
@@ -165,13 +183,16 @@ void MainGameScene::Update(float deltaTime) {
 
 	player->Update(deltaTime);
 	enemies.Update(deltaTime);
+	trees.Update(deltaTime);
 	objects.Update(deltaTime);
 
 	DetectCollision(player, enemies);
-	DetectCollision(player, objects, PlayerCollisionHandler);
+	DetectCollision(player, trees);
+	DetectCollision(player, objects);
 	
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);
+	trees.UpdateDrawData(deltaTime);
 	objects.UpdateDrawData(deltaTime);
 
 	spriteRenderer.BeginUpdate();
@@ -217,14 +238,9 @@ void MainGameScene::Render() {
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 	Mesh::Draw(meshBuffer.GetFile("Terrain"), glm::mat4(1));
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
-	glm::vec3 treePos(110, 0, 110);
-	treePos.y = heightMap.Height(treePos);
-	const glm::mat4 matTreeModel =
-		glm::translate(glm::mat4(1), treePos) * glm::scale(glm::mat4(1), glm::vec3(3));
-	Mesh::Draw(meshBuffer.GetFile("Res/red_pine_tree.gltf"), matTreeModel);
-	meshBuffer.SetViewProjectionMatrix(matProj * matView);
-
+	
 	player->Draw();
 	enemies.Draw();
+	trees.Draw();
 	objects.Draw();
 }
