@@ -4,9 +4,9 @@
 
 #ifndef GAMEOVERSCENE_H_INCLUDED
 #define GAMEOVERSCENE_H_INCLUDED
-#include "Scene.h"
-#include "Sprite.h"
-#include "Font.h"
+#include "../Scene.h"
+#include "../Sprite.h"
+#include "../Font.h"
 #include <vector> 
 
 

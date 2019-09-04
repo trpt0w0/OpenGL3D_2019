@@ -4,7 +4,6 @@
 #define NOMINMAX
 #include "Mesh.h"
 #include "SkeletalMesh.h"
-#include"json11.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <fstream>
 #include <algorithm>

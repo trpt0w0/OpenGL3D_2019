@@ -4,14 +4,14 @@
 
 #ifndef MAINGAMESCENE_H_INCLUDED
 #define MAINGAMESCENE_H_INCLUDED
-#include "Scene.h"
-#include "Sprite.h"
-#include "Font.h"
-#include "Mesh.h"
-#include "Terrain.h"
-#include "Actor.h"
-#include "PlayerActor.h"
-#include "EnemyActor.h"
+#include "../Scene.h"
+#include "../Sprite.h"
+#include "../Font.h"
+#include "../Mesh.h"
+#include "../Terrain.h"
+#include "../Actor.h"
+#include "../PlayerActor.h"
+#include "../EnemyActor.h"
 #include <vector>
 
 

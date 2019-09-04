@@ -2,12 +2,12 @@
 *	@file MainGameScene.cpp
 */
 
-#include "GLFWEW.h"
+#include "../GLFWEW.h"
 #include "MainGameScene.h"
 #include "StatusScene.h"
 #include "GameOverScene.h"
-#include "Mesh.h"
-#include "SkeletalMeshActor.h"
+#include "../Mesh.h"
+#include "../SkeletalMeshActor.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 #include <random>

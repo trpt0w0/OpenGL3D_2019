@@ -4,7 +4,7 @@
 
 #include "TitleScene.h"
 #include "MainGameScene.h"
-#include "GLFWEW.h"
+#include "../GLFWEW.h"
 #include "GameOverScene.h"
 
 

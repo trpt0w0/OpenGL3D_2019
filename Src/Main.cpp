@@ -6,9 +6,11 @@
 
 #include <Windows.h>
 #include "GLFWEW.h"
-#include "TitleScene.h"
+#include "Scene/TitleScene.h"
+#include "Audio/Audio.h"
 #include <iostream>
 #include "SkeletalMesh.h"
+
 int main() 
 {
 

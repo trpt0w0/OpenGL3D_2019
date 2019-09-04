@@ -9,24 +9,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Src\Audio">
+      <UniqueIdentifier>{19afbca5-c9d2-4cb5-b0a9-08ce2c5b5362}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Scene">
+      <UniqueIdentifier>{6bc91409-1fdc-4f16-8bb5-31906f91f34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Json">
+      <UniqueIdentifier>{65913f15-06fa-46e5-8d90-c8c395f0e801}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Main.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\Scene.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\TitleScene.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\MainGameScene.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\StatusScene.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GameOverScene.cpp">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GLFWEW.cpp">
@@ -53,9 +50,6 @@
     <ClCompile Include="Src\Terrain.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\json11.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Actor.cpp">
       <Filter>Src</Filter>
     </ClCompile>
@@ -74,24 +68,27 @@
     <ClCompile Include="Src\UniformBuffer.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Audio.cpp">
-      <Filter>Src</Filter>
+    <ClCompile Include="Src\Audio\Audio.cpp">
+      <Filter>Src\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Scene\GameOverScene.cpp">
+      <Filter>Src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Scene\MainGameScene.cpp">
+      <Filter>Src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Scene\StatusScene.cpp">
+      <Filter>Src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Scene\TitleScene.cpp">
+      <Filter>Src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Json\json11.cpp">
+      <Filter>Src\Json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\TitleScene.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\MainGameScene.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\StatusScene.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\GameOverScene.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\GamePad.h">
@@ -124,9 +121,6 @@
     <ClInclude Include="Src\Terrain.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\json11.hpp">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Actor.h">
       <Filter>Src</Filter>
     </ClInclude>
@@ -149,8 +143,23 @@
     <ClInclude Include="Src\EnemyActor.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Audio.h">
-      <Filter>Src</Filter>
+    <ClInclude Include="Src\Audio\Audio.h">
+      <Filter>Src\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Scene\GameOverScene.h">
+      <Filter>Src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Scene\MainGameScene.h">
+      <Filter>Src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Scene\StatusScene.h">
+      <Filter>Src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Scene\TitleScene.h">
+      <Filter>Src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Json\json11.hpp">
+      <Filter>Src\Json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

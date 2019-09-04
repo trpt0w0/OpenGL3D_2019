@@ -8,7 +8,7 @@
 #include "BufferObject.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "json11.hpp"
+#include "Json/json11.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 #include <unordered_map>

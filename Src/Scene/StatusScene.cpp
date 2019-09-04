@@ -1,18 +1,21 @@
 /**
-*	@file TitleScene.cpp
+*	@file StatusScene.cpp
 */
 
-#include "TitleScene.h"
+#include "../GLFWEW.h"
 #include "MainGameScene.h"
-#include "GLFWEW.h"
+#include "StatusScene.h"
+#include "GameOverScene.h"
+#include <glm/gtc/matrix_transform.hpp>
+
 
 /**
 *	シーンを初期化する
 *
-*	@retval	true	初期化成功	
-*	@retval	false	初期化失敗 
+*	@retval	true	初期化成功
+*	@retval	false	初期化失敗
 */
-bool TitleScene::Initialize() {
+bool StatusScene::Initialize() {
 	spriteRenderer.Init(1000, "Res/Sprite.vert", "Res/Sprite.frag");
 	sprites.reserve(100);
 	Sprite spr(Texture::Image2D::Create("Res/TitleBg.tga"));
@@ -29,11 +32,12 @@ bool TitleScene::Initialize() {
 /**
 *	プレイヤーの入力を処理する
 */
-void TitleScene::ProcessInput() {
+void StatusScene::ProcessInput() {
 
 	GLFWEW::Window& window = GLFWEW::Window::Instance();
+
 	if (window.GetGamePad().buttonDown & GamePad::START) {
-		SceneStack::Instance().Replace(std::make_shared<MainGameScene>());
+		SceneStack::Instance().Push(std::make_shared<GameOverScene>());
 	}
 }
 
@@ -42,7 +46,7 @@ void TitleScene::ProcessInput() {
 *
 *	@param deltatime	前回の更新からの経過時間(秒)
 */
-void TitleScene::Update(float deltaTime) {
+void StatusScene::Update(float deltaTime) {
 	spriteRenderer.BeginUpdate();
 	for (const Sprite& e : sprites) {
 		spriteRenderer.AddVertices(e);
@@ -53,10 +57,11 @@ void TitleScene::Update(float deltaTime) {
 	const float w = window.Width();
 	const float h = window.Height();
 	const float lineHeight = fontRenderer.LineHeight();
+
+
+
 	fontRenderer.BeginUpdate();
-	fontRenderer.Color(glm::vec4(0, 255, 255, 255));
-	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"タイトル画面");
-	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
+	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"ステータス画面");
 	fontRenderer.EndUpdate();
 }
 
@@ -64,10 +69,11 @@ void TitleScene::Update(float deltaTime) {
 /**
 *	シーンを描画する
 */
-void TitleScene::Render() {
+void StatusScene::Render() {
 	const GLFWEW::Window& window = GLFWEW::Window::Instance();
 	const glm::vec2 screenSize(window.Width(), window.Height());
 	spriteRenderer.Draw(screenSize);
 
 	fontRenderer.Draw(screenSize);
+
 }
