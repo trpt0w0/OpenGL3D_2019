@@ -82,6 +82,7 @@ bool MainGameScene::Initialize() {
 		return false;
 	}
 
+	//
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
@@ -177,7 +178,7 @@ void MainGameScene::Update(float deltaTime) {
 	
 	{
 		camera.target = player->position;
-		camera.position = camera.target + glm::vec3(0, 50, 50);
+		camera.position = camera.target + glm::vec3(0, 30, 30);
 
 	}
 

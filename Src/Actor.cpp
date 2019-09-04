@@ -232,15 +232,19 @@ void DetectCollision(const ActorPtr& a, ActorList& b, CollisionHandlerType handl
 
 		glm::vec3 pa, pb;
 		if (Collision::TestShapeShape(a->colWorld, actorB->colWorld, &pa, &pb)) {
-			handler(a, actorB, pb);
-		}else {
-			//a->OnHit(actorB, pb);
-			//actorB->OnHit(a, pa);
+			if (handler) {
+				handler(a, actorB, pb);
+			}
+			else
+			{
+				a->OnHit(actorB, pb);
+				actorB->OnHit(a, pa);
 
-		}
+			}
 
-		if (a->health <= 0) {
+			if (a->health <= 0) {
 				break;
+			}
 		}
 			
 		
@@ -266,14 +270,20 @@ void DetectCollision(ActorList& a, ActorList& b, CollisionHandlerType handler) {
 
 			glm::vec3 pa, pb;
 			if (Collision::TestShapeShape(actorA->colWorld, actorB->colWorld, &pa, &pb)) {
-				handler(actorA, actorB, pa);
-			} else {
-				actorA->OnHit(actorB, pb);
-				actorB->OnHit(actorA, pa);
-			}
-				
-			if(actorA->health <= 0){
+
+				if (handler) {
+					handler(actorA, actorB, pa);
+				}
+				else {
+					actorA->OnHit(actorB, pb);
+					actorB->OnHit(actorA, pa);
+				}
+
+
+				if (actorA->health <= 0) {
 					break;
+				}
+
 			}
 			
 		}

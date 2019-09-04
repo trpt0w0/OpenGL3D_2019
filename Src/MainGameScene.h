@@ -11,6 +11,7 @@
 #include "Terrain.h"
 #include "Actor.h"
 #include "PlayerActor.h"
+#include "EnemyActor.h"
 #include <vector>
 
 

@@ -184,17 +184,20 @@ namespace Collision {
 					*pb = b.s.center;
 					return true;
 				}
-			} else if (b.type == Shape::Type::capsule) {
-				if (TestSphereCapsule(a.s, b.c,pb)) {
+			}
+			else if (b.type == Shape::Type::capsule) {
+				if (TestSphereCapsule(a.s, b.c, pb)) {
 					*pa = a.s.center;
 					return true;
-				}else if(b.type == Shape::Type::obb) {
-					if (TestSphereOBB(a.s, b.obb, pb)) {
-						*pa = a.s.center;
-						return true;
-					}
 				}
 			}
+			else if(b.type == Shape::Type::obb) {
+				if (TestSphereOBB(a.s, b.obb, pb)) {
+					*pa = a.s.center;
+					return true;
+				}
+			}
+			
 		}else if(a.type == Shape::Type::capsule) {
 			if (b.type == Shape::Type::sphere) {
 				if (TestSphereCapsule(b.s, a.c, pa)) {

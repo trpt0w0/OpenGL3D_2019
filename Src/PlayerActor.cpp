@@ -178,7 +178,7 @@ void PlayerActor::CheckJump(const GamePad& gamepad) {
 */
 
 void PlayerActor::Jump() {
-	velocity.y = 5.0f;
+	velocity.y = 10.0f;
 	boardingActor.reset();
 	isInAir = true;
 }

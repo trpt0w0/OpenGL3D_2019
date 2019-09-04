@@ -74,6 +74,9 @@
     <ClCompile Include="Src\UniformBuffer.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Audio.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
@@ -143,6 +146,12 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Src\EnemyActor.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Audio.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

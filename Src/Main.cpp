@@ -26,11 +26,13 @@ int main()
 	
 		window.Update();
 		window.UpdateGamePad();
-		window.UpdateDeltaTime();
+		//window.UpdateDeltaTime();
+		const float deltaTime = window.DeltaTime();
+		window.UpdateTimer();
 		// スケルタル・アニメーション用データの作成準備
 		Mesh::SkeletalAnimation::ResetUniformData();
 
-		sceneStack.Update(window.DeltaTime());
+		sceneStack.Update(deltaTime);
 
 		// スケルタル・アニメーション用データをGPUにメモリに転送
 		Mesh::SkeletalAnimation::UploadUniformData();
