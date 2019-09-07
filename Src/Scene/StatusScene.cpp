@@ -37,7 +37,10 @@ void StatusScene::ProcessInput() {
 	GLFWEW::Window& window = GLFWEW::Window::Instance();
 
 	if (window.GetGamePad().buttonDown & GamePad::START) {
-		SceneStack::Instance().Push(std::make_shared<GameOverScene>());
+		Audio::Engine::Instance().Prepare("Res/Audio/StatusSoundEffect.mp3")->Play();
+
+		SceneStack::Instance().Pop();
+
 	}
 }
 

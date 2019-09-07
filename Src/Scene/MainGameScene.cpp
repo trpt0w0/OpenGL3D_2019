@@ -60,6 +60,8 @@ bool MainGameScene::Initialize() {
 	fontRenderer.Init(1000);
 	sprites.reserve(100);
 	fontRenderer.LoadFromFile("Res/font.fnt");
+	bgm = Audio::Engine::Instance().Prepare("Res/Audio/MainGameBgm.mp3");
+	bgm->Play(Audio::Flag_Loop);
 
 	
 	Sprite spr(Texture::Image2D::Create("Res/TitleBg.tga"));
@@ -159,9 +161,14 @@ void MainGameScene::ProcessInput() {
 	if (!flag) {
 		if (window.GetGamePad().buttonDown & GamePad::START) {
 			flag = true;
+			Audio::Engine::Instance().Prepare("Res/Audio/StatusSoundEffect.mp3")->Play();
 			SceneStack::Instance().Push(std::make_shared<StatusScene>());
 		}
-	} 
+	} else{
+		bgm->Stop();
+		SceneStack::Instance().Replace(std::make_shared<GameOverScene>());
+
+	}
 }
 
 /**
@@ -191,6 +198,8 @@ void MainGameScene::Update(float deltaTime) {
 	DetectCollision(player, trees);
 	DetectCollision(player, objects);
 	
+	//auto err = glGetError();
+
 	player->UpdateDrawData(deltaTime);
 	enemies.UpdateDrawData(deltaTime);
 	trees.UpdateDrawData(deltaTime);
@@ -219,6 +228,7 @@ void MainGameScene::Update(float deltaTime) {
 *	ÉVÅ[ÉìÇï`âÊÇ∑ÇÈ
 */
 void MainGameScene::Render() {
+
 	const GLFWEW::Window& window = GLFWEW::Window::Instance();
 	const glm::vec2 screenSize(window.Width(), window.Height());
 	spriteRenderer.Draw(screenSize);

@@ -19,6 +19,10 @@ bool TitleScene::Initialize() {
 	spr.Scale(glm::vec2(2));
 	sprites.push_back(spr);
 
+	// BGMを再生する
+	bgm = Audio::Engine::Instance().Prepare("Res/Audio/TitleBgm.mp3");
+	bgm->Play(Audio::Flag_Loop);
+
 	fontRenderer.Init(1000);
 	fontRenderer.LoadFromFile("Res/font.fnt");
 
@@ -32,8 +36,10 @@ bool TitleScene::Initialize() {
 void TitleScene::ProcessInput() {
 
 	GLFWEW::Window& window = GLFWEW::Window::Instance();
-	if (window.GetGamePad().buttonDown & GamePad::START) {
-		SceneStack::Instance().Replace(std::make_shared<MainGameScene>());
+	
+	if (timer <= 0 && (window.GetGamePad().buttonDown & GamePad::START)) {
+		Audio::Engine::Instance().Prepare("Res/Audio/Start.wav")->Play();
+		timer = 1.0f;
 	}
 }
 
@@ -58,6 +64,16 @@ void TitleScene::Update(float deltaTime) {
 	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"タイトル画面");
 	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
 	fontRenderer.EndUpdate();
+
+	// シーン切り替え待ち
+	if (timer > 0) {
+		timer -=  deltaTime;
+		if (timer <= 0) {
+			bgm->Stop();
+			SceneStack::Instance().Replace(std::make_shared<MainGameScene>());
+			return;
+		}
+	}
 }
 
 

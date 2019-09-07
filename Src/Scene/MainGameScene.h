@@ -12,6 +12,7 @@
 #include "../Actor.h"
 #include "../PlayerActor.h"
 #include "../EnemyActor.h"
+#include "../Audio/Audio.h"
 #include <vector>
 
 
@@ -40,6 +41,7 @@ private:
 	ActorList enemies;
 	ActorList trees;
 	ActorList objects;
+	Audio::SoundPtr bgm;
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

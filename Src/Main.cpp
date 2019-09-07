@@ -15,9 +15,20 @@ int main()
 {
 
 	auto& window = GLFWEW::Window::Instance();
-	window.Init(800, 600, "Title");
+	if (!window.Init(800, 600, "Title")) {
+		return 1;
+	}
+
+	// 音楽再生プログラムを初期化する
+	Audio::Engine& audioEngine = Audio::Engine::Instance();
+	if (!audioEngine.Initialize()) {
+		return 1;
+	}
+
 	// スケルタルメッシュ・アニメーションを利用可能にする
-	Mesh::SkeletalAnimation::Initialize();
+	if (!Mesh::SkeletalAnimation::Initialize()) {
+		return 1;
+	}
 
 	SceneStack& sceneStack = SceneStack::Instance();
 	sceneStack.Push(std::make_shared<TitleScene>());
@@ -39,7 +50,8 @@ int main()
 		// スケルタル・アニメーション用データをGPUにメモリに転送
 		Mesh::SkeletalAnimation::UploadUniformData();
 
-
+		// 音声再生プログラムを更新する
+		audioEngine.Update();
 
 		// バックバッファを削除する
 		glClearColor(0.8f, 0.2f, 0.1f, 1.0f);
@@ -62,7 +74,11 @@ int main()
 		window.SwapBuffers();
 	}
 
+	// スケルタル・アニメーションの利用を終了する
 	Mesh::SkeletalAnimation::Finalize();
+
+	// 音声再生プログラムを終了する
+	audioEngine.Finalize();
 
 	return 0;
 }

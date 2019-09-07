@@ -21,6 +21,9 @@ bool GameOverScene::Initialize() {
 	spr.Scale(glm::vec2(2));
 	sprites.push_back(spr);
 
+	bgm = Audio::Engine::Instance().Prepare("Res/Audio/GameOverBgm.mp3");
+	bgm->Play(Audio::Flag_Loop);
+
 	fontRenderer.Init(1000);
 	fontRenderer.LoadFromFile("Res/font.fnt");
 
@@ -37,9 +40,9 @@ void GameOverScene::ProcessInput() {
 
 	if (!flag) {
 	
-		if (window.GetGamePad().buttonDown & GamePad::DPAD_UP) {
+		if (window.GetGamePad().buttonDown & GamePad::START) {
 			flag = true;
-
+			bgm->Stop();
 			SceneStack::Instance().Push(std::make_shared<TitleScene>());
 		}
 	}
