@@ -181,8 +181,9 @@ void BindUniformData(GLintptr offset, GLsizeiptr size)
   if (!isInitialized) {
     return;
   }
-
-  ubo[!currentUboIndex]->BindBufferRange(offset, size);
+  if (size > 0) {
+	  ubo[!currentUboIndex]->BindBufferRange(offset, size);
+  }
 }
 
 } // namespace SkeletalAnimation

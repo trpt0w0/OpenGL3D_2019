@@ -54,6 +54,9 @@ bool BufferObject::BufferSubData(GLintptr offset, GLsizeiptr size, const GLvoid*
 			return false;
 		}
 	}
+	if (size <= 0) {
+		return true;
+	}
 	glBindBuffer(target, id);
 	glBufferSubData(target, offset, size, data);
 	glBindBuffer(target, 0);
