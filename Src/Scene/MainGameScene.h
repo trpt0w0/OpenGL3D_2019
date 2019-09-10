@@ -11,8 +11,9 @@
 #include "../Terrain.h"
 #include "../Actor.h"
 #include "../PlayerActor.h"
-#include "../EnemyActor.h"
 #include "../Audio/Audio.h"
+#include "../JizoActor.h"
+#include <random>
 #include <vector>
 
 
@@ -30,8 +31,14 @@ public:
 	virtual void Render() override;
 	virtual void Finalize() override {}
 
+	bool HandleJizoEffescts(int id, const glm::vec3& pos);
+
+
 private:
 	bool flag = false;
+	int jizoId = -1;	// Œ»İí“¬’†‚Ì‚¨’n‘ —l‚ÌID
+	bool achivemests[4] = { false, false, false, false };	// “G“¢”°ó‘Ô
+	std::mt19937 rand;
 	std::vector<Sprite> sprites;
 	SpriteRenderer spriteRenderer;
 	FontRenderer fontRenderer;

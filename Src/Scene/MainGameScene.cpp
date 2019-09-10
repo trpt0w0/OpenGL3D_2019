@@ -10,7 +10,7 @@
 #include "../SkeletalMeshActor.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
-#include <random>
+
 
 
 
@@ -70,8 +70,9 @@ bool MainGameScene::Initialize() {
 	
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
-	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
+	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
+	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
 	meshBuffer.LoadSkeletalMesh("Res/oni_small.gltf");
 	
 
@@ -84,10 +85,49 @@ bool MainGameScene::Initialize() {
 		return false;
 	}
 
-	//
+	
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
+
+	// お地蔵様を配置
+	
+	for (int i = 0; i < 4; ++i) {
+		glm::vec3 position(0);
+		position.x = static_cast<float>(std::uniform_int_distribution<>(50, 150)(rand));
+		position.z = static_cast<float>(std::uniform_int_distribution<>(50, 150)(rand));
+		position.y = heightMap.Height(position);
+		glm::vec3 rotation(0);
+		rotation.y = std::uniform_real_distribution<float>(0.0f, 3.14f * 2.0f)(rand);
+		JizoActorPtr p = std::make_shared<JizoActor>(
+			meshBuffer.GetFile("Res/jizo_statue.gltf"), position, i, this);
+		p->scale = glm::vec3(3);	// 見つけやすいように拡大
+		objects.Add(p);
+
+
+	}
+
+	const size_t oniCount = 100;
+	enemies.Reserve(oniCount);
+#if 0
+	for (size_t i = 0; i < oniCount; ++i) {
+		// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
+		glm::vec3 position(0);
+		position.x = std::uniform_real_distribution<float>(50, 150)(rand);
+		position.z = std::uniform_real_distribution<float>(50, 150)(rand);
+		position.y = heightMap.Height(position);
+		// 敵の向きをランダムに選択
+		glm::vec3 rotation(0);
+		rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
+		const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
+		SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
+			mesh, "Kooni", 13, position, rotation);
+		p->GetMesh()->Play("Run");
+		p->colLocal = Collision::CreateCapsule(
+			glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0), 0.5f);
+		enemies.Add(p);
+	}
+#endif
 
 	
 	// 石壁を配置
@@ -102,33 +142,10 @@ bool MainGameScene::Initialize() {
 		objects.Add(p);
 	
 	}
-
-	std::mt19937 rand;
 	rand.seed(0);
 
-	// 敵を配置
-	{
-		const size_t oniCount = 30;
-		enemies.Reserve(oniCount);
-		for (size_t i = 0; i < oniCount; ++i) {
-			// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
-			glm::vec3 position(0);
-			position.x = std::uniform_real_distribution<float>(50, 150)(rand);
-			position.z = std::uniform_real_distribution<float>(50, 150)(rand);
-			position.y = heightMap.Height(position);
-			// 敵の向きをランダムに選択
-			glm::vec3 rotation(0);
-			rotation.y = std::uniform_real_distribution<float>(0, 6.3f)(rand);
-			const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
-			SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
-				mesh, "Kooni", 13, position,rotation);
-			p->GetMesh()->Play("Run");
-			p->colLocal = Collision::CreateCapsule(
-				glm::vec3(0, 0.5f, 0), glm::vec3(0,1,0), 0.5f );
-			enemies.Add(p);
-
-		}	
-	}
+		
+	
 	// 木を配置
 	{
 		const size_t treeCount = 50;
@@ -254,4 +271,43 @@ void MainGameScene::Render() {
 	enemies.Draw();
 	trees.Draw();
 	objects.Draw();
+}
+
+/**
+*	お地蔵様に触れたときの処理
+*
+*	@param id	お地蔵様の番号
+*	@param pos	お地蔵様の座標
+*
+*	@retval true	処理成功
+*	@retval false	処理失敗
+*/
+bool MainGameScene::HandleJizoEffescts(int id, const glm::vec3& pos) {
+	
+	if (jizoId >= 0) {
+		return false;
+	}
+	jizoId = id;
+
+	const size_t oniCount = 8;
+	for (size_t i = 0; i < oniCount; ++i) {
+		// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
+		glm::vec3 position(pos);
+		position.x = std::uniform_real_distribution<float>(-15, 15)(rand);
+		position.z = std::uniform_real_distribution<float>(-15, 15)(rand);
+		position.y = heightMap.Height(position);
+		// 敵の向きをランダムに選択
+		
+		glm::vec3 rotation(0);
+		rotation.y = std::uniform_real_distribution<float>(0, 3.14f * 2.0f)(rand);
+		const Mesh::SkeletalMeshPtr mesh = meshBuffer.GetSkeletalMesh("oni_small");
+		SkeletalMeshActorPtr p = std::make_shared<SkeletalMeshActor>(
+			mesh, "Kooni", 13, position, rotation);
+		p->GetMesh()->Play("Wait");
+		p->colLocal = Collision::CreateCapsule(
+			glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0), 0.5f);
+		enemies.Add(p);
+	}
+
+	return true;
 }
