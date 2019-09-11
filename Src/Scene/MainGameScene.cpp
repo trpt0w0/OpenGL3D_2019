@@ -11,9 +11,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
 
-
-
-
 /**
 *	衝突を解決する
 *
@@ -89,6 +86,8 @@ bool MainGameScene::Initialize() {
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
+	
+	rand.seed(0);
 
 	// お地蔵様を配置
 	
@@ -109,6 +108,7 @@ bool MainGameScene::Initialize() {
 
 	const size_t oniCount = 100;
 	enemies.Reserve(oniCount);
+
 #if 0
 	for (size_t i = 0; i < oniCount; ++i) {
 		// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
@@ -214,6 +214,66 @@ void MainGameScene::Update(float deltaTime) {
 	DetectCollision(player, enemies);
 	DetectCollision(player, trees);
 	DetectCollision(player, objects);
+	// プレイヤーの攻撃判定
+	ActorPtr attackCollision = player->GetAttackCollision();
+	if (attackCollision) {
+		bool hit = false;
+		DetectCollision(attackCollision, enemies,[this, &hit](const ActorPtr& a, const ActorPtr& b, const glm::vec3& p){
+			SkeletalMeshActorPtr bb = std::static_pointer_cast<SkeletalMeshActor>(b);
+			bb->health -= a->health;
+			if (bb->health <= 0) {
+				bb->colLocal = Collision::Shape{};
+				bb->health = 1;
+				bb->GetMesh()->Play("Down", false);
+			} else {
+				bb->GetMesh()->Play("Hit", false);
+			}
+			hit = true;
+		}
+		);	
+		if (hit) {
+			attackCollision->health = 0;
+
+		}
+	}
+
+	// 死亡アニメーションの終わった敵を消す
+	for (auto& e : enemies) {
+		SkeletalMeshActorPtr enemy = std::static_pointer_cast<SkeletalMeshActor>(e);
+		Mesh::SkeletalMeshPtr mesh = enemy->GetMesh();
+		if (mesh->IsFinished()) {
+			if (mesh->GetAnimation() == "Down") {
+				enemy->health = 0;
+			} else {
+				mesh->Play("Wait");
+			}
+		}
+
+	}
+
+	// 敵を全滅させたら目的達成フラグをtrueにする
+	if (jizoId >= 0) {
+		if (enemies.Empty()) {
+			achivements[jizoId] = true;
+			jizoId = -1;
+		}
+	}
+
+
+	//ゲームクリア画面の切り替え(クリア画面がないのでゲームオーバー画面)
+	if (timer > 0) {
+		timer -= deltaTime;
+		if (timer == 0.0f) {
+			bgm->Stop();
+			SceneStack::Instance().Replace(std::make_shared<GameOverScene>());
+		}
+
+	}
+
+	if (timer == 0.0f && achivements) {
+		timer = 1.0f;
+	}
+
 	
 	//auto err = glGetError();
 
@@ -291,10 +351,9 @@ bool MainGameScene::HandleJizoEffescts(int id, const glm::vec3& pos) {
 
 	const size_t oniCount = 8;
 	for (size_t i = 0; i < oniCount; ++i) {
-		// 敵の位置を(50,50)-(150,150)の範囲からランダムに選択
 		glm::vec3 position(pos);
-		position.x = std::uniform_real_distribution<float>(-15, 15)(rand);
-		position.z = std::uniform_real_distribution<float>(-15, 15)(rand);
+		position.x += std::uniform_real_distribution<float>(-15, 15)(rand);
+		position.z += std::uniform_real_distribution<float>(-15, 15)(rand);
 		position.y = heightMap.Height(position);
 		// 敵の向きをランダムに選択
 		

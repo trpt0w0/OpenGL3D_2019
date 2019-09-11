@@ -37,7 +37,7 @@ public:
 private:
 	bool flag = false;
 	int jizoId = -1;	// Œ»İí“¬’†‚Ì‚¨’n‘ —l‚ÌID
-	bool achivemests[4] = { false, false, false, false };	// “G“¢”°ó‘Ô
+	bool achivements[4] = { false, false, false, false };	// “G“¢”°ó‘Ô
 	std::mt19937 rand;
 	std::vector<Sprite> sprites;
 	SpriteRenderer spriteRenderer;
@@ -49,6 +49,7 @@ private:
 	ActorList trees;
 	ActorList objects;
 	Audio::SoundPtr bgm;
+	float timer = 0;
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

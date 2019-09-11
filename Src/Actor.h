@@ -84,6 +84,7 @@ public:
 	void Update(float);
 	void UpdateDrawData(float);
 	void Draw();
+	bool Empty() { return actors.empty(); }
 
 	// イテレーターを取得する関数
 	iterator begin() { return actors.begin(); }
@@ -103,6 +104,19 @@ void DetectCollision(const ActorPtr& a, const ActorPtr& b, CollisionHandlerType 
 void DetectCollision(const ActorPtr& a, ActorList& b, CollisionHandlerType handler = nullptr);
 void DetectCollision(ActorList& a, ActorList& b, CollisionHandlerType handler = nullptr);
 
+class Enemy : public StaticMeshActor {
+public:
+	Enemy(const Mesh::FilePtr& m, const std::string& name, int hp,
+		const glm::vec3& pos, const glm::vec3& rot = glm::vec3(0),
+		const glm::vec3& scale = glm::vec3(1));
+	~Enemy() = default;
+
+	virtual void OnHit();
+
+
+
+};
+using EnemyPtr = std::shared_ptr<Enemy>;
 
 
 
