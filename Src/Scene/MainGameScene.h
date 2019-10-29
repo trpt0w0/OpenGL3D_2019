@@ -13,6 +13,7 @@
 #include "../PlayerActor.h"
 #include "../Audio/Audio.h"
 #include "../JizoActor.h"
+#include "../Light.h"
 #include <random>
 #include <vector>
 
@@ -50,6 +51,9 @@ private:
 	ActorList objects;
 	Audio::SoundPtr bgm;
 	float timer = 0;
+
+	LightBuffer lightBuffer;
+	ActorList lights;
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

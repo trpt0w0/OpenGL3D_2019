@@ -66,6 +66,8 @@ bool MainGameScene::Initialize() {
 	sprites.push_back(spr);
 	
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
+	lightBuffer.Init(1);
+	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
 	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
@@ -88,6 +90,21 @@ bool MainGameScene::Initialize() {
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
 	
 	rand.seed(0);
+
+	// ライトを配置
+	lights.Add(std::make_shared<DirectionalLightActor>(
+		"Direction", glm::vec3(0.2f), glm::normalize(glm::vec3(1, -2, -1))));
+	for (int i = 0; i < 50; ++i) {
+		glm::vec3 color(1, 0.8f, 0.5f);
+		glm::vec3 position(0);
+		position.x = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
+		position.z = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
+		position.y = heightMap.Height(position) + 1;
+		lights.Add(std::make_shared<PointLightActor>("PointLight",color, position));
+	}
+
+
+
 
 	// お地蔵様を配置
 	
@@ -210,6 +227,7 @@ void MainGameScene::Update(float deltaTime) {
 	enemies.Update(deltaTime);
 	trees.Update(deltaTime);
 	objects.Update(deltaTime);
+	lights.Update(deltaTime);
 
 	DetectCollision(player, enemies);
 	DetectCollision(player, trees);
@@ -250,6 +268,31 @@ void MainGameScene::Update(float deltaTime) {
 		}
 
 	}
+	// ライトの更新
+	glm::vec3 ambientColor(0.1f, 0.05f, 0.15f);
+	lightBuffer.Update(lights, ambientColor);
+	for (auto e : trees) {
+		const std::vector<ActorPtr> neighborhood = lights.FindNearbyActors(e->position, 20);
+		std::vector<int> pointLightIndex;
+		std::vector<int> spotLightIndex;
+		pointLightIndex.reserve(neighborhood.size());
+		spotLightIndex.reserve(neighborhood.size());
+		for (auto light : neighborhood) {
+			if (PointLightActorPtr p = std::dynamic_pointer_cast<PointLightActor>(light)) {
+				if (pointLightIndex.size() < 8) {
+					pointLightIndex.push_back(p->index);
+				}
+			} else if (SpotLightActorPtr p = std::dynamic_pointer_cast<SpotLightActor>(light)) {
+				if (spotLightIndex.size() < 8) {
+					spotLightIndex.push_back(p->index);
+				}
+			}
+		}
+		StaticMeshActorPtr p = std::static_pointer_cast<StaticMeshActor>(e);
+		p->SetPointLightList(pointLightIndex);
+		p->SetSpotLightList(spotLightIndex);
+	}
+
 
 	// 敵を全滅させたら目的達成フラグをtrueにする
 	if (jizoId >= 0) {
@@ -309,8 +352,12 @@ void MainGameScene::Render() {
 	const GLFWEW::Window& window = GLFWEW::Window::Instance();
 	const glm::vec2 screenSize(window.Width(), window.Height());
 	spriteRenderer.Draw(screenSize);
-
 	fontRenderer.Draw(screenSize);
+
+	glEnable(GL_DEPTH_TEST);
+
+	lightBuffer.Upload();
+	lightBuffer.Bind();
 
 
 	const glm::mat4 matView = glm::lookAt(camera.position, camera.target, camera.up);
