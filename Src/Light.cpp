@@ -54,7 +54,7 @@ bool LightBuffer::BindToShader(const Shader::ProgramPtr& program) {
 }
 
 /**
-*	GPUへ転送するライトでーたを更新する
+*	GPUへ転送するライトデータを更新する
 *
 *	@param al			ライトのアクターリスト
 *	@param ambientColor	環境光の明るさ
@@ -70,8 +70,7 @@ void LightBuffer::Update(const ActorList& al, const glm::vec3& ambientColor) {
 			std::dynamic_pointer_cast<DirectionalLightActor>(*i)) {
 			data.directionalLight.color = glm::vec4(ambientColor, 0);
 			data.directionalLight.direction = glm::vec4(p->direction, 0);
-		}
-		else if (PointLightActorPtr p = std::dynamic_pointer_cast<PointLightActor>(*i)) {
+		} else if (PointLightActorPtr p = std::dynamic_pointer_cast<PointLightActor>(*i)) {
 			if (pointLightCount < 100) {
 				p->index = pointLightCount;
 				PointLight& light = data.pointLight[pointLightCount];

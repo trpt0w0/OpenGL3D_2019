@@ -289,7 +289,7 @@ namespace Mesh {
 
 		Material m;
 		m.baseColor = color;
-		m.texture = texture;
+		m.texture[0] = texture;
 		m.program = progStaticMesh;
 		m.progSkeletalMesh = progSkeletalMesh;
 		return m;
@@ -640,11 +640,17 @@ namespace Mesh {
 				m.program->SetModelMatrix(matM);
 				glActiveTexture(GL_TEXTURE0);
 
-				//テクスチャがあるときは、そのテクスチャIDを設定する.ないときは0を設定する
-				if (m.texture) {
-					glBindTexture(GL_TEXTURE_2D, m.texture->Get());
-				} else {
-					glBindTexture(GL_TEXTURE_2D, 0);
+				// テクスチャがあるときは、そのテクスチャIDを設定する。ないときは0を設定する
+				for (int i = 0; i < sizeof(m.texture) / sizeof(m.texture[0]); ++i) {
+					glActiveTexture(GL_TEXTURE0 + i);
+
+					//テクスチャがあるときは、そのテクスチャIDを設定する.ないときは0を設定する
+					if (m.texture[i]) {
+						glBindTexture(GL_TEXTURE_2D, m.texture[i]->Get());
+					}
+					else {
+						glBindTexture(GL_TEXTURE_2D, 0);
+					}
 				}
 
 				glDrawElementsBaseVertex(p.mode, p.count, p.type, p.indices, p.baseVertex);

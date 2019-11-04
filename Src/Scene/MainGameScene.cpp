@@ -99,8 +99,8 @@ bool MainGameScene::Initialize() {
 		glm::vec3 position(0);
 		position.x = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
 		position.z = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
-		position.y = heightMap.Height(position) + 1;
-		lights.Add(std::make_shared<PointLightActor>("PointLight",color, position));
+		position.y = heightMap.Height(position) + 4;
+		lights.Add(std::make_shared<PointLightActor>("PointLight",color*5.0f, position));
 	}
 
 
