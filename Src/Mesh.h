@@ -113,6 +113,7 @@ namespace Mesh{
 		SkeletalMeshPtr GetSkeletalMesh(const char* meshName) const;
 
 		const Shader::ProgramPtr& GetStaticMeshShader() const { return progStaticMesh; }
+		const Shader::ProgramPtr& GetTerrainShader() const { return progTerrain; }
 
 	private:
 		BufferObject vbo;
@@ -121,6 +122,7 @@ namespace Mesh{
 		GLintptr iboEnd = 0;
 		std::unordered_map<std::string, FilePtr> files;
 		Shader::ProgramPtr progStaticMesh;
+		Shader::ProgramPtr progTerrain;
 
 		//スケルタル・アニメーションに対応したメッシュを保持するメンバ変数
 		Shader::ProgramPtr progSkeletalMesh;

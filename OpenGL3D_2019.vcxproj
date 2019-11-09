@@ -183,6 +183,8 @@
     <None Include="Res\Sprite.vert" />
     <None Include="Res\StaticMesh.frag" />
     <None Include="Res\StaticMesh.vert" />
+    <None Include="Res\Terrain.frag" />
+    <None Include="Res\Terrain.vert" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL3D_2019.rc" />

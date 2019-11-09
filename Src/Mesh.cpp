@@ -197,6 +197,11 @@ namespace Mesh {
 		}
 		SkeletalAnimation::BindUniformBlock(progSkeletalMesh);
 
+		progTerrain = Shader::Program::Create("Res/Terrain.vert", "Res/Terrain.frag");
+		if (progTerrain->IsNull()) {
+			return false;
+		}
+
 		vboEnd = 0;
 		iboEnd = 0;
 		files.reserve(100);
@@ -615,6 +620,8 @@ namespace Mesh {
 		progStaticMesh->SetViewProjectionMatrix(matVP);
 		progSkeletalMesh->Use();
 		progSkeletalMesh->SetViewProjectionMatrix(matVP);
+		progTerrain->Use();
+		progTerrain->SetViewProjectionMatrix(matVP);
 		glUseProgram(0);
 	}
 
