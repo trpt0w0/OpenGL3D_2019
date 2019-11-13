@@ -136,6 +136,7 @@
     <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\PlayerActor.cpp" />
     <ClCompile Include="Src\Scene.cpp" />
+    <ClCompile Include="Src\Scene\GameClearScene.cpp" />
     <ClCompile Include="Src\Scene\GameOverScene.cpp" />
     <ClCompile Include="Src\Scene\MainGameScene.cpp" />
     <ClCompile Include="Src\Scene\StatusScene.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\PlayerActor.h" />
     <ClInclude Include="Src\Scene.h" />
+    <ClInclude Include="Src\Scene\GameClearScene.h" />
     <ClInclude Include="Src\Scene\GameOverScene.h" />
     <ClInclude Include="Src\Scene\MainGameScene.h" />
     <ClInclude Include="Src\Scene\StatusScene.h" />

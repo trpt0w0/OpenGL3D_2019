@@ -92,6 +92,9 @@
     <ClCompile Include="Src\Light.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Scene\GameClearScene.cpp">
+      <Filter>Src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scene.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="Src\Light.h">
       <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Scene\GameClearScene.h">
+      <Filter>Src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

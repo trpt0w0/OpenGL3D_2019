@@ -6,6 +6,7 @@
 #include "MainGameScene.h"
 #include "StatusScene.h"
 #include "GameOverScene.h"
+#include "GameClearScene.h"
 #include "../Mesh.h"
 #include "../SkeletalMeshActor.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -68,6 +69,7 @@ bool MainGameScene::Initialize() {
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
 	lightBuffer.Init(1);
 	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
+	lightBuffer.BindToShader(meshBuffer.GetTerrainShader());
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
 	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
@@ -308,7 +310,7 @@ void MainGameScene::Update(float deltaTime) {
 		timer -= deltaTime;
 		if (timer == 0.0f) {
 			bgm->Stop();
-			SceneStack::Instance().Replace(std::make_shared<GameOverScene>());
+			SceneStack::Instance().Replace(std::make_shared<GameClearScene>());
 		}
 
 	}
