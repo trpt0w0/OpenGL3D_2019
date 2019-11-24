@@ -487,6 +487,7 @@ void SkeletalMesh::Draw() const
       }
       m.progSkeletalMesh->Use();
 	  for (int i = 0; i < sizeof(m.texture) / sizeof(m.texture[0]); ++i) {
+		  glActiveTexture(GL_TEXTURE0 + i);
 		  if (m.texture[i]) {
 			  glBindTexture(GL_TEXTURE_2D, m.texture[i]->Get());
 		  }else{

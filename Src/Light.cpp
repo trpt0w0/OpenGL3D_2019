@@ -68,7 +68,7 @@ void LightBuffer::Update(const ActorList& al, const glm::vec3& ambientColor) {
 	for (auto i = al.begin(); i != al.end(); ++i) {
 		if (DirectionalLightActorPtr p =
 			std::dynamic_pointer_cast<DirectionalLightActor>(*i)) {
-			data.directionalLight.color = glm::vec4(ambientColor, 0);
+			data.directionalLight.color = glm::vec4(p->color, 0);
 			data.directionalLight.direction = glm::vec4(p->direction, 0);
 		} else if (PointLightActorPtr p = std::dynamic_pointer_cast<PointLightActor>(*i)) {
 			if (pointLightCount < 100) {

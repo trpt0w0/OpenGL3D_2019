@@ -188,7 +188,7 @@ void Program::Reset(GLuint programId)
   }
 
   for (GLint i = 0; i < 8; ++i) {
-	  std::string name("texColor[");
+	  std::string name("texColorArray[");
 	  name += static_cast<char>('0' + i);
 	  name += ']';
 	  const GLint texColorLoc = glGetUniformLocation(id, name.c_str());
@@ -196,6 +196,16 @@ void Program::Reset(GLuint programId)
 		  glUniform1i(texColorLoc, i);
 	  }
   }
+  const GLint locTexPointLightIndex = glGetUniformLocation(id, "texPointLightIndex");
+  if (locTexPointLightIndex >= 0) {
+	  glUniform1i(locTexPointLightIndex, 4);
+  }
+  const GLint locTexSpotLightIndex = glGetUniformLocation(id, "texSpotLightIndex");;
+  if (locTexSpotLightIndex >= 0) {
+	  glUniform1i(locTexSpotLightIndex, 5);
+  }
+
+
   glUseProgram(0);
 
 }

@@ -95,7 +95,7 @@ bool MainGameScene::Initialize() {
 
 	// ライトを配置
 	lights.Add(std::make_shared<DirectionalLightActor>(
-		"Direction", glm::vec3(0.2f), glm::normalize(glm::vec3(1, -2, -1))));
+		"Direction", glm::vec3(0.8f), glm::normalize(glm::vec3(1, -2, -1))));
 	for (int i = 0; i < 50; ++i) {
 		glm::vec3 color(1, 0.8f, 0.5f);
 		glm::vec3 position(0);
@@ -104,7 +104,10 @@ bool MainGameScene::Initialize() {
 		position.y = heightMap.Height(position) + 4;
 		lights.Add(std::make_shared<PointLightActor>("PointLight",color*5.0f, position));
 	}
-
+	
+	lights.Update(0);
+	lightBuffer.Update(lights, glm::vec3(0.1f, 0.05f, 0.15f));
+	heightMap.UpdateLightIndex(lights);
 
 
 

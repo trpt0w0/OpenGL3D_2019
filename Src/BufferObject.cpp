@@ -47,7 +47,7 @@ bool BufferObject::Create(
 *	@retval	false	“]‘—Ž¸”s
 */
 bool BufferObject::BufferSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-	if (offset + size >= this->size) {
+	if (offset + size > this->size) {
 		std::cerr << "[Œx]" << __func__ << ":“]‘—æ—Ìˆæ‚ªƒoƒbƒtƒ@ƒTƒCƒY‚ð‰z‚¦‚Ä‚¢‚Ü‚·.\n"
 			<< "  buffer size:" << this->size << "  offset:" << offset << " size:" << size << "\n";
 		if (offset >= this->size) {

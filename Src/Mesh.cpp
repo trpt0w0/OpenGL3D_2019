@@ -653,7 +653,7 @@ namespace Mesh {
 
 					//テクスチャがあるときは、そのテクスチャIDを設定する.ないときは0を設定する
 					if (m.texture[i]) {
-						glBindTexture(GL_TEXTURE_2D, m.texture[i]->Get());
+						glBindTexture(m.texture[i]->Target(), m.texture[i]->Get());
 					}
 					else {
 						glBindTexture(GL_TEXTURE_2D, 0);

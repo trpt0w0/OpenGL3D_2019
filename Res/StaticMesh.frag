@@ -12,6 +12,12 @@ out vec4 fragColor;
 
 uniform sampler2D texColor;
 
+uniform int pointLightCount;		//ポイントライトの数
+uniform int pointLightIndex[8];
+
+uniform int spotLightCount;			// スポットライトの数
+uniform int spotLightIndex[8];
+
 struct AmbientLight{
 	vec4 color;
 };
@@ -39,13 +45,6 @@ layout(std140) uniform LightUniformBlock{
 	PointLight pointLight[100];
 	SpotLight spotLight[100];
 };
-
-uniform int pointLightCount;		//ポイントライトの数
-uniform int pointLightIndex[8];
-
-uniform int spotLightCount;			// スポットライトの数
-uniform int spotLightIndex[8];
-
 /**
 *	スプライト用フラグメントシェーダー
 */
