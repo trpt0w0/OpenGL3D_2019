@@ -196,6 +196,17 @@ void Program::Reset(GLuint programId)
 		  glUniform1i(texColorLoc, i);
 	  }
   }
+
+  for (int i = 0; i < 8; ++i) {
+	  std::string name("texNormalArray[");
+	  name += static_cast<char>('0' + i);
+	  name += ']';
+	  const GLuint texColorLoc = glGetUniformLocation(id, name.c_str());
+	  if (texColorLoc >= 0) {
+		  glUniform1i(texColorLoc, i + 8);
+	  }
+  }
+
   const GLint locTexPointLightIndex = glGetUniformLocation(id, "texPointLightIndex");
   if (locTexPointLightIndex >= 0) {
 	  glUniform1i(locTexPointLightIndex, 4);
