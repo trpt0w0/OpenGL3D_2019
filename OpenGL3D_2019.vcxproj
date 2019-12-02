@@ -187,6 +187,7 @@
     <None Include="Res\StaticMesh.vert" />
     <None Include="Res\Terrain.frag" />
     <None Include="Res\Terrain.vert" />
+    <None Include="Res\Water.frag" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL3D_2019.rc" />

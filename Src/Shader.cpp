@@ -169,8 +169,8 @@ void Program::Reset(GLuint programId)
 	locPointLightIndex = -1;
 	locSpotLightCount = -1;
 	locSpotLightCount = -1;
-
-
+	locCameraPosition = -1;
+	locTime = -1;
     return;
   }
 
@@ -180,6 +180,9 @@ void Program::Reset(GLuint programId)
   locPointLightIndex = glGetUniformLocation(id, "pointLightIndex");
   locSpotLightCount = glGetUniformLocation(id, "spotLightCount");
   locSpotLightIndex = glGetUniformLocation(id, "spotLightIndex");
+  locCameraPosition = glGetUniformLocation(id, "cameraPosition");
+  locTime = glGetUniformLocation(id, "time");
+
 
   glUseProgram(id);
   const GLint texColorLoc = glGetUniformLocation(id, "texColor");
@@ -215,7 +218,10 @@ void Program::Reset(GLuint programId)
   if (locTexSpotLightIndex >= 0) {
 	  glUniform1i(locTexSpotLightIndex, 5);
   }
-
+  const GLint locTexCubeMap = glGetUniformLocation(id, "texCubeMap");
+  if (locTexCubeMap >= 0) {
+	  glUniform1i(locTexCubeMap, 6);
+  }
 
   glUseProgram(0);
 
@@ -319,10 +325,30 @@ void Program::SetSpotLightIndex(int count, const int* indexList) {
 		glUniform1iv(locSpotLightIndex, count, indexList);
 	}
 
-
 }
 
+/**
+*	カメラ座標を設定する
+*
+*	@param pos	カメラ座標
+*/
+void Program::SetCameraPosition(const glm::vec3 &pos) {
+	
+	if (locCameraPosition >= 0) {
+		glUniform3fv(locCameraPosition, 1, &pos.x);
+	}
+}
 
+/**
+*	総経過時間を設定する
+*
+*	@param time  総経過時間
+*/
+void Program::SetTime(float time) {
+	if(locTime >= 0){
+		glUniform1f(locTime, time);
+	}
+}
 
 
 /**
