@@ -15,8 +15,11 @@ int main()
 {
 
 	auto& window = GLFWEW::Window::Instance();
-	if (!window.Init(800, 600, "Title")) {
-		return 1;
+
+
+	//if (!window.Init(800, 600, "Title")) {
+	if(!window.Init(1600, 1200,"Title")){
+	return 1;
 	}
 
 	// ‰¹ŠyÄ¶ƒvƒƒOƒ‰ƒ€‚ğ‰Šú‰»‚·‚é

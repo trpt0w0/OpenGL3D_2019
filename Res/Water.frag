@@ -58,6 +58,8 @@ layout(std140) uniform LightUniformBlock{
 
 void main(){
 
+	//fragColor=vec4(0,0,0,1);
+
 	vec4 waterColor = vec4(0.15, 0.20, 0.3, 0.6);	// êÖÇÃêFÇ∆ïsìßñæìx
 	fragColor = waterColor;
 

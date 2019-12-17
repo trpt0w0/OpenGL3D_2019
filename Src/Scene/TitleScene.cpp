@@ -19,6 +19,7 @@ bool TitleScene::Initialize() {
 	spr.Scale(glm::vec2(2));
 	sprites.push_back(spr);
 
+	
 	// BGM‚ðÄ¶‚·‚é
 	bgm = Audio::Engine::Instance().Prepare("Res/Audio/TitleBgm.mp3");
 	bgm->Play(Audio::Flag_Loop);

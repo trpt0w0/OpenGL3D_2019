@@ -67,9 +67,6 @@ bool MainGameScene::Initialize() {
 	sprites.push_back(spr);
 	
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
-	lightBuffer.Init(1);
-	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
-	lightBuffer.BindToShader(meshBuffer.GetTerrainShader());
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
 	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
@@ -78,7 +75,7 @@ bool MainGameScene::Initialize() {
 	
 
 	// ハイマップを作成する
-	if (!heightMap.LoadFromFile("Res/Terrain.tga", 20.0f, 0.5f)) {
+	if (!heightMap.LoadFromFile("Res/Terrain.tga", 50.0f, 0.5f)) {
 		return false;
 	}
 
@@ -86,7 +83,16 @@ bool MainGameScene::Initialize() {
 		return false;
 	}
 
+	if (!heightMap.CreateWaterMesh(meshBuffer,"Water", -15)) { // 水面の高さは要調整
+		return false;
 	
+	}	
+
+	lightBuffer.Init(1);
+	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
+	lightBuffer.BindToShader(meshBuffer.GetTerrainShader());
+	lightBuffer.BindToShader(meshBuffer.GetWaterShader());
+
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
 	player = std::make_shared<PlayerActor>(&heightMap, meshBuffer, startPos);
@@ -370,6 +376,10 @@ void MainGameScene::Render() {
 		static_cast<float>(window.Width()) / static_cast<float> (window.Height());
 	const glm::mat4 matProj = 
 		glm::perspective(glm::radians(30.0f), aspectRatio, 1.0f, 1000.0f);
+	meshBuffer.SetCameraPosition(camera.position);
+	meshBuffer.SetTime(window.Time());
+	
+	
 	glm::vec3 cubePos(100, 0, 100);
 	cubePos.y = heightMap.Height(cubePos);
 	const glm::mat4 matModel = glm::translate(glm::mat4(1), cubePos);
@@ -378,6 +388,8 @@ void MainGameScene::Render() {
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 	Mesh::Draw(meshBuffer.GetFile("Terrain"), glm::mat4(1));
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
+
+	Mesh::Draw(meshBuffer.GetFile("Water"), glm::mat4(1));
 	
 	player->Draw();
 	enemies.Draw();

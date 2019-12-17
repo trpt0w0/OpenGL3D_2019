@@ -200,7 +200,9 @@
     <None Include="Res\Terrain.frag">
       <Filter>Res</Filter>
     </None>
-    <None Include="Res\Water.frag" />
+    <None Include="Res\Water.frag">
+      <Filter>Res</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL3D_2019.rc">

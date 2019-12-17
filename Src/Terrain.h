@@ -30,6 +30,8 @@ namespace Terrain{
 		const glm::ivec2& Size() const;
 		bool CreateMesh(Mesh::Buffer& meshBuffer,
 			const char* meshName, const char* texName = nullptr) const;
+		bool CreateWaterMesh(Mesh::Buffer& meshBuffer, const char* meshName, float waterLevel)const;
+
 		void UpdateLightIndex(const ActorList& lights);
 
 	private:

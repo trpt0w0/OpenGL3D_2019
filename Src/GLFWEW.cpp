@@ -351,6 +351,17 @@ double Window::DeltaTime() const
 }
 
 /**
+*	総経過時間を取得する
+*
+*	@return GLFWが初期化されてからの経過時間(秒)
+*/
+double Window::Time() const {
+	return glfwGetTime();
+
+}
+
+
+/**
 * 状態を更新する.
 */
 void Window::Update()
