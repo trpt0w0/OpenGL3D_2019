@@ -389,6 +389,7 @@ void MainGameScene::Render() {
 	Mesh::Draw(meshBuffer.GetFile("Terrain"), glm::mat4(1));
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	Mesh::Draw(meshBuffer.GetFile("Water"), glm::mat4(1));
 	
 	player->Draw();

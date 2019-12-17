@@ -40,7 +40,7 @@ private:
 	State state = State::idle;	// 現在のアニメーションの状態
 	bool isInAir = false;		// 空中判定フラグ
 	ActorPtr boardingActor;		// 乗っているアクター
-	float moveSpeed = 5.0f;		// 移動速度
+	float moveSpeed = 10.0f;		// 移動速度
 	ActorPtr attackCollision;	// 攻撃判定
 	float attackTimer = 0;		// 攻撃時間
 
