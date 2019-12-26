@@ -128,6 +128,7 @@
     <ClCompile Include="Src\BufferObject.cpp" />
     <ClCompile Include="Src\Collision.cpp" />
     <ClCompile Include="Src\Font.cpp" />
+    <ClCompile Include="Src\FramebufferObject.cpp" />
     <ClCompile Include="Src\GLFWEW.cpp" />
     <ClCompile Include="Src\JizoActor.cpp" />
     <ClCompile Include="Src\Json\json11.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Src\Collision.h" />
     <ClInclude Include="Src\EnemyActor.h" />
     <ClInclude Include="Src\Font.h" />
+    <ClInclude Include="Src\FramebufferObject.h" />
     <ClInclude Include="Src\GamePad.h" />
     <ClInclude Include="Src\Geometry.h" />
     <ClInclude Include="Src\GLFWEW.h" />
@@ -181,6 +183,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Res\DepthOfField.frag" />
+    <None Include="Res\DepthOfField.vert" />
     <None Include="Res\Sprite.frag" />
     <None Include="Res\Sprite.vert" />
     <None Include="Res\StaticMesh.frag" />

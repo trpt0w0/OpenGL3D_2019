@@ -14,6 +14,7 @@
 #include "../Audio/Audio.h"
 #include "../JizoActor.h"
 #include "../Light.h"
+#include "../FramebufferObject.h"
 #include <random>
 #include <vector>
 
@@ -54,6 +55,7 @@ private:
 
 	LightBuffer lightBuffer;
 	ActorList lights;
+	FramebufferObjectPtr fboMain;
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

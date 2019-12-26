@@ -106,11 +106,11 @@ namespace Mesh{
 		FilePtr GetFile(const char* name) const;
 		void SetViewProjectionMatrix(const glm::mat4&) const;
 		void SetCameraPosition(const glm::vec3&) const ;
-		void SetTime(double) const ;
-
-
-
+		void SetTime(double) const;
 		void AddCube(const char* name);
+		FilePtr AddPlane(const char* name);
+
+
 
 		// スケルタルメッシュに対応したメッシュの読み込みと取得
 		bool LoadSkeletalMesh(const char* path);

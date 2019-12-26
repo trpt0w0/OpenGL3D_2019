@@ -72,6 +72,20 @@ bool MainGameScene::Initialize() {
 	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
 	meshBuffer.LoadSkeletalMesh("Res/bikuni.gltf");
 	meshBuffer.LoadSkeletalMesh("Res/oni_small.gltf");
+
+	// FBOを作成する
+	const GLFWEW::Window& window = GLFWEW::Window::Instance();
+	fboMain = FramebufferObject::Create(window.Width(), window.Height());
+	Mesh::FilePtr rt = meshBuffer.AddPlane("RenderTarget");
+	if (rt) {
+		rt->materials[0].program = Shader::Program::Create("Res/DepthOfField.vert", "Res/DepthOfField.frag");
+		rt->materials[0].texture[0] = fboMain->GetColorTexture();
+		rt->materials[0].texture[1] = fboMain->GetDepthTexture();
+	}
+
+	if (!rt || !rt->materials[0].program) {
+		return false;
+	}
 	
 
 	// ハイマップを作成する
@@ -349,7 +363,7 @@ void MainGameScene::Update(float deltaTime) {
 
 	fontRenderer.BeginUpdate();
 	fontRenderer.AddString(glm::vec2(-w * 0.5f + 32, h * 0.5f - lineHeight), L"メイン画面");
-	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
+//	fontRenderer.AddString(glm::vec2(-128, 0), L"アクションゲーム");
 	fontRenderer.EndUpdate();
 }
 
@@ -363,13 +377,20 @@ void MainGameScene::Render() {
 	const GLFWEW::Window& window = GLFWEW::Window::Instance();
 	const glm::vec2 screenSize(window.Width(), window.Height());
 	spriteRenderer.Draw(screenSize);
-	fontRenderer.Draw(screenSize);
 
 	glEnable(GL_DEPTH_TEST);
 
 	lightBuffer.Upload();
 	lightBuffer.Bind();
 
+
+	// FBOに描画
+	glBindFramebuffer(GL_FRAMEBUFFER, fboMain->GetFramebuffer());
+	glClearColor(0.5f, 0.6f, 0.8f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
 
 	const glm::mat4 matView = glm::lookAt(camera.position, camera.target, camera.up);
 	const float aspectRatio =
@@ -378,7 +399,13 @@ void MainGameScene::Render() {
 		glm::perspective(glm::radians(30.0f), aspectRatio, 1.0f, 1000.0f);
 	meshBuffer.SetCameraPosition(camera.position);
 	meshBuffer.SetTime(window.Time());
-	
+
+
+	player->Draw();
+	enemies.Draw();
+	trees.Draw();
+	objects.Draw();
+
 	
 	glm::vec3 cubePos(100, 0, 100);
 	cubePos.y = heightMap.Height(cubePos);
@@ -391,11 +418,20 @@ void MainGameScene::Render() {
 
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	Mesh::Draw(meshBuffer.GetFile("Water"), glm::mat4(1));
-	
-	player->Draw();
-	enemies.Draw();
-	trees.Draw();
-	objects.Draw();
+
+	// デフォルトのフレームバッファに描画
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+		Mesh::FilePtr mesh = meshBuffer.GetFile("RenderTarget");
+		Mesh::Draw(mesh, glm::mat4(1));
+		fontRenderer.Draw(screenSize);
+
+	}
 }
 
 /**
