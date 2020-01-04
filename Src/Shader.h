@@ -42,6 +42,9 @@ public:
   void SetCameraPosition(const glm::vec3&);
   void SetTime(float);
 
+  void SetViewInfo(float w, float h, float near, float far);
+  void SetCameraInfo(float focalPlane, float focalLength, float aperture,float sensorSize);
+
   GLuint Get() const { return id; }
 
 private:
@@ -56,6 +59,9 @@ private:
   GLint locSpotLightIndex = -1;
   GLint locCameraPosition = -1;
   GLint locTime = -1;
+  GLint locViewInfo = -1;
+  GLint locCameraInfo = -1;
+
 
   glm::mat4 matVP = glm::mat4(1);	// ビュー・プロジェクション行列
 };
