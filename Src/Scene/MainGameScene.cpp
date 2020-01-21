@@ -11,6 +11,7 @@
 #include "../SkeletalMeshActor.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
+#include <iostream>
 
 /**
 *	衝突を解決する
@@ -67,6 +68,15 @@ bool MainGameScene::Initialize() {
 	sprites.push_back(spr);
 	
 	meshBuffer.Init(1'000'000 * sizeof(Mesh::Vertex), 3'000'000 * sizeof(GLushort));
+
+	lightBuffer.Init(1);
+	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
+	lightBuffer.BindToShader(meshBuffer.GetTerrainShader());
+	lightBuffer.BindToShader(meshBuffer.GetWaterShader());
+
+	spotLightBuffer.Init(2);
+	spotLightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
+
 	meshBuffer.LoadMesh("Res/red_pine_tree.gltf");
 	meshBuffer.LoadMesh("Res/wall_stone.gltf");
 	meshBuffer.LoadMesh("Res/jizo_statue.gltf");
@@ -75,7 +85,7 @@ bool MainGameScene::Initialize() {
 
 	// FBOを作成する
 	const GLFWEW::Window& window = GLFWEW::Window::Instance();
-	fboMain = FramebufferObject::Create(window.Width(), window.Height());
+	fboMain = FramebufferObject::Create(window.Width(), window.Height(), GL_RGBA16F);
 	Mesh::FilePtr rt = meshBuffer.AddPlane("RenderTarget");
 	if (rt) {
 		rt->materials[0].program = Shader::Program::Create("Res/DepthOfField.vert", "Res/DepthOfField.frag");
@@ -86,7 +96,52 @@ bool MainGameScene::Initialize() {
 	if (!rt || !rt->materials[0].program) {
 		return false;
 	}
+
+	// DoF描画用FBOを作る
+	fboDepthOfField = FramebufferObject::Create(window.Width(), window.Height(), GL_RGBA16F);
 	
+	// 元解像度の縦横1/2(面接が1/4)の大きさのブルーム用FBOを作る
+	int w = window.Width();
+	int h = window.Height();
+	for (int j = 0; j < sizeof(fboBloom) / sizeof(fboBloom[0]); ++j) {
+		w /= 2;
+		h /= 2;
+
+		for (int i = 0; i < sizeof(fboBloom[0]) / sizeof(fboBloom[0][0]); ++i ) {
+			fboBloom[j][i] = FramebufferObject::Create(w, h, GL_RGBA16F, FrameBufferType::colorOnly);
+			if (!fboBloom[j][i]) {
+				return false;
+			}
+		}
+	}
+
+	// ブルーム・エフェクト用の平面ポリゴンメッシュを作成する
+	if (Mesh::FilePtr mesh = meshBuffer.AddPlane("BrightPassFilter")) {
+		Shader::ProgramPtr p = Shader::Program::Create("Res/Simple.vert", "Res/BrightPassFilter.frag");
+		p->Use();
+		p->SetViewProjectionMatrix(glm::mat4(1));
+		mesh->materials[0].program = p;
+	}
+
+	if (Mesh::FilePtr mesh = meshBuffer.AddPlane("NormalBlur")) {
+		Shader::ProgramPtr p = Shader::Program::Create("Res/Simple.vert", "Res/NormalBlur.frag");
+		p->Use();
+		p->SetViewProjectionMatrix(glm::mat4(1));
+		mesh->materials[0].program = p;
+	}
+
+	if (Mesh::FilePtr mesh = meshBuffer.AddPlane("Simple")) {
+		Shader::ProgramPtr p = Shader::Program::Create("Res/Simple.vert", "Res/Simple.frag");
+		p->Use();
+		p->SetViewProjectionMatrix(glm::mat4(1));
+		mesh->materials[0].program = p;
+	}
+	if (glGetError()) {
+		std::cout << "[エラー]" << __func__ << ":ブルーム用メッシュの作成に失敗.\n";
+		return false;
+
+	}
+
 
 	// ハイマップを作成する
 	if (!heightMap.LoadFromFile("Res/Terrain.tga", 50.0f, 0.5f)) {
@@ -102,10 +157,6 @@ bool MainGameScene::Initialize() {
 	
 	}	
 
-	lightBuffer.Init(1);
-	lightBuffer.BindToShader(meshBuffer.GetStaticMeshShader());
-	lightBuffer.BindToShader(meshBuffer.GetTerrainShader());
-	lightBuffer.BindToShader(meshBuffer.GetWaterShader());
 
 	glm::vec3 startPos(100, 0, 100);
 	startPos.y = heightMap.Height(startPos);
@@ -117,14 +168,24 @@ bool MainGameScene::Initialize() {
 	lights.Add(std::make_shared<DirectionalLightActor>(
 		"Direction", glm::vec3(0.8f), glm::normalize(glm::vec3(1, -2, -1))));
 	for (int i = 0; i < 50; ++i) {
-		glm::vec3 color(1, 0.8f, 0.5f);
+		glm::vec3 color = glm::vec3(1, 0.8f, 0.5f) * 20.0f;
 		glm::vec3 position(0);
 		position.x = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
 		position.z = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
-		position.y = heightMap.Height(position) + 4;
+		position.y = heightMap.Height(position) + 5;
 		lights.Add(std::make_shared<PointLightActor>("PointLight",color*5.0f, position));
 	}
-	
+	for (int i = 0; i < 30; ++i) {
+		glm::vec3 color = glm::vec3(1, 2, 3) * 25.0f;
+		glm::vec3 direction(glm::normalize(glm::vec3(0.25f, -1, 0.25f)));
+		glm::vec3 position(0);
+		position.x = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
+		position.z = static_cast<float>(std::uniform_int_distribution<>(80, 120)(rand));
+		position.y = heightMap.Height(position) + 5;
+		lights.Add(std::make_shared<SpotLightActor>("SpotLight", color, position, direction, glm::radians(20.0f), glm::radians(15.0f)));
+
+	}
+
 	lights.Update(0);
 	lightBuffer.Update(lights, glm::vec3(0.1f, 0.05f, 0.15f));
 	heightMap.UpdateLightIndex(lights);
@@ -383,9 +444,13 @@ void MainGameScene::Render() {
 	lightBuffer.Upload();
 	lightBuffer.Bind();
 
-
+	spotLightBuffer.Upload();
+	spotLightBuffer.Bind();
 	// FBOに描画
 	glBindFramebuffer(GL_FRAMEBUFFER, fboMain->GetFramebuffer());
+	const auto texMain = fboMain->GetColorTexture();
+	glViewport(0, 0, texMain->Width(), texMain->Height());
+
 	glClearColor(0.5f, 0.6f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -406,12 +471,12 @@ void MainGameScene::Render() {
 	trees.Draw();
 	objects.Draw();
 
-	
+
 	glm::vec3 cubePos(100, 0, 100);
 	cubePos.y = heightMap.Height(cubePos);
 	const glm::mat4 matModel = glm::translate(glm::mat4(1), cubePos);
 
-	Mesh::Draw(meshBuffer.GetFile("Cube"),matModel);
+	Mesh::Draw(meshBuffer.GetFile("Cube"), matModel);
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
 	Mesh::Draw(meshBuffer.GetFile("Terrain"), glm::mat4(1));
 	meshBuffer.SetViewProjectionMatrix(matProj * matView);
@@ -419,32 +484,115 @@ void MainGameScene::Render() {
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	Mesh::Draw(meshBuffer.GetFile("Water"), glm::mat4(1));
 
-	// デフォルトのフレームバッファに描画
+
+	// 被写界深度エフェクト
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, fboDepthOfField->GetFramebuffer());
+		const auto tex = fboDepthOfField->GetColorTexture();
+		glViewport(0, 0, tex->Width(), tex->Height());
+
+
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
-		
+
 		camera.Update(matView);
 
 		Mesh::FilePtr mesh = meshBuffer.GetFile("RenderTarget");
-		
+
 		Shader::ProgramPtr prog = mesh->materials[0].program;
 		prog->Use();
 		prog->SetViewInfo(static_cast<float>(window.Width()),
 			static_cast<float>(window.Height()), camera.near, camera.far);
-		prog->SetCameraInfo(camera.focalPlane, camera.focalLength, 
+		prog->SetCameraInfo(camera.focalPlane, camera.focalLength,
 			camera.aperture, camera.sensorSize);
 
-
-
 		Mesh::Draw(mesh, glm::mat4(1));
-		fontRenderer.Draw(screenSize);
+	}
+
+	//ブルーム・エフェクト
+	{
+
+		// 明るい部分を取り出す
+		auto tex = fboBloom[0][0]->GetColorTexture();
+		glBindFramebuffer(GL_FRAMEBUFFER, fboBloom[0][0]->GetFramebuffer());
+		glViewport(0, 0, tex->Width(), tex->Height());
+		glClear(GL_COLOR_BUFFER_BIT);
+		Mesh::FilePtr mesh = meshBuffer.GetFile("BrightPassFilter");
+		mesh->materials[0].texture[0] = fboDepthOfField->GetColorTexture();
+		Mesh::Draw(mesh, glm::mat4(1));
 
 	}
+
+	// 縮小コピー
+	Mesh::FilePtr simpleMesh = meshBuffer.GetFile("Simple");
+	for (int i = 0; i < sizeof(fboBloom) / sizeof(fboBloom[0]) - 1; ++i) {
+		auto tex = fboBloom[i + 1][0]->GetColorTexture();
+		glBindFramebuffer(GL_FRAMEBUFFER, fboBloom[i + 1][0]->GetFramebuffer());
+		glViewport(0, 0, tex->Width(), tex->Height());
+		glClear(GL_COLOR_BUFFER_BIT);
+		simpleMesh->materials[0].texture[0] = fboBloom[i][0]->GetColorTexture();
+		Mesh::Draw(simpleMesh, glm::mat4(1));
+	}
+
+	// ガウスぼかし
+	Mesh::FilePtr blurMesh = meshBuffer.GetFile("NormalBlur");
+	Shader::ProgramPtr progBlur = blurMesh->materials[0].program;
+	for (int i = sizeof(fboBloom) / sizeof(fboBloom[0]) - 1; i >= 0; --i) {
+		auto tex = fboBloom[i][0]->GetColorTexture();
+		glBindFramebuffer(GL_FRAMEBUFFER, fboBloom[i][1]->GetFramebuffer());
+		glViewport(0, 0, tex->Width(), tex->Height());
+		glClear(GL_COLOR_BUFFER_BIT);
+		progBlur->Use();
+		progBlur->SetBlurDirection(1.0f / static_cast<float>(tex->Width()), 0.0f);
+		blurMesh->materials[0].texture[0] = fboBloom[i][0]->GetColorTexture();
+		Mesh::Draw(blurMesh, glm::mat4(1));
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fboBloom[i][0]->GetFramebuffer());
+		glClear(GL_COLOR_BUFFER_BIT);
+		progBlur->Use();
+		progBlur->SetBlurDirection(0.0f, 1.0f / static_cast<float>(tex->Height()));
+		blurMesh->materials[0].texture[0] = fboBloom[i][1]->GetColorTexture();
+		Mesh::Draw(blurMesh, glm::mat4(1));
+
+	}
+
+	// 拡大＆加算合成
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	for (int i = sizeof(fboBloom) / sizeof(fboBloom[0]) - 1; i > 0; --i) {
+		auto tex = fboBloom[i - 1][0]->GetColorTexture();
+		glBindFramebuffer(GL_FRAMEBUFFER, fboBloom[i - 1][0]->GetFramebuffer());
+		glViewport(0, 0, tex->Width(), tex->Height());
+		simpleMesh->materials[0].texture[0] = fboBloom[i][0]->GetColorTexture();
+		Mesh::Draw(simpleMesh, glm::mat4(1));
+	}
+
+	{
+		// 全てデフォルト・フレームバッファに合成描画
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, window.Width(), window.Height());
+
+		const glm::vec2 screenSize(window.Width(), window.Height());
+		spriteRenderer.Draw(screenSize);
+
+		// 被写界深度エフェクト適用後の画像を描画
+		glDisable(GL_BLEND);
+		Mesh::FilePtr simpleMesh = meshBuffer.GetFile("Simple");
+		simpleMesh->materials[0].texture[0] = fboDepthOfField->GetColorTexture();
+		Mesh::Draw(simpleMesh, glm::mat4(1));
+
+		// 拡散光を描画
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+		simpleMesh->materials[0].texture[0] = fboBloom[0][0]->GetColorTexture();
+		Mesh::Draw(simpleMesh, glm::mat4(1));
+	}
+
+		fontRenderer.Draw(screenSize);
+
 }
 
 /**

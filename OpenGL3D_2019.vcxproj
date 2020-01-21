@@ -183,8 +183,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Res\BrightpassFilter.frag" />
     <None Include="Res\DepthOfField.frag" />
     <None Include="Res\DepthOfField.vert" />
+    <None Include="Res\NormalBlur.frag" />
+    <None Include="Res\Simple.frag" />
+    <None Include="Res\Simple.vert" />
     <None Include="Res\Sprite.frag" />
     <None Include="Res\Sprite.vert" />
     <None Include="Res\StaticMesh.frag" />

@@ -55,7 +55,12 @@ private:
 
 	LightBuffer lightBuffer;
 	ActorList lights;
+	LightBuffer spotLightBuffer;
+
+
 	FramebufferObjectPtr fboMain;
+	FramebufferObjectPtr fboDepthOfField;
+	FramebufferObjectPtr fboBloom[6][2];
 
 	struct Camera {
 		glm::vec3 target = glm::vec3(100, 0, 100);

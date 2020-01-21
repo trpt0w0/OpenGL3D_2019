@@ -215,6 +215,18 @@
     <None Include="Res\DepthOfField.frag">
       <Filter>Res</Filter>
     </None>
+    <None Include="Res\Simple.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\Simple.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\BrightpassFilter.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\NormalBlur.frag">
+      <Filter>Res</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL3D_2019.rc">

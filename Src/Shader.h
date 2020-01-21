@@ -44,6 +44,8 @@ public:
 
   void SetViewInfo(float w, float h, float near, float far);
   void SetCameraInfo(float focalPlane, float focalLength, float aperture,float sensorSize);
+  void SetBlurDirection(float x, float y);
+
 
   GLuint Get() const { return id; }
 
@@ -61,7 +63,7 @@ private:
   GLint locTime = -1;
   GLint locViewInfo = -1;
   GLint locCameraInfo = -1;
-
+  GLint locBlurDirection = -1;
 
   glm::mat4 matVP = glm::mat4(1);	// ビュー・プロジェクション行列
 };

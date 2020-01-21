@@ -55,6 +55,8 @@ public:
 	virtual GLint Height() const = 0;
 	virtual GLenum Target() const = 0;
 
+	void SetWrapMode(GLenum mode);
+
 };
 
 /**

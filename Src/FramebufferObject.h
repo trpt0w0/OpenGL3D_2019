@@ -12,11 +12,22 @@ class FramebufferObject;
 using FramebufferObjectPtr = std::shared_ptr<FramebufferObject>;
 
 /**
+*	フレームバッファの種類
+*/
+enum class FrameBufferType {
+	colorAndDepth,
+	colorOnly,
+	depthOnly,
+
+};
+
+/**
 *	フレームバッファオブジェクト
 */
 class FramebufferObject {
 public:
-	static FramebufferObjectPtr Create(int w, int h);
+	static FramebufferObjectPtr Create(int w, int h,
+		GLenum internalFormat = GL_RGBA8, FrameBufferType type = FrameBufferType::colorAndDepth);
 	FramebufferObject() = default;
 	~FramebufferObject();
 
